@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard-deployment
+  labels:
+    easytrack: dashboard
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      easytrack: dashboard
+  template:
+    metadata:
+      labels:
+        easytrack: dashboard
+    spec:
+      containers:
+        - image: qobiljon/et-dashboard:1.4
+          name: et-dashboard
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8443

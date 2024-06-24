@@ -1,0 +1,51 @@
+# Partial Docker Compose file for Easytrack project
+# Includes Postgres and pgAdmin4 containers
+
+version: "3.8"
+
+services:
+  postgres:
+    container_name: easytrack-postgres
+
+    image: postgres:alpine
+
+    environment:
+      POSTGRES_DBNAME: ${POSTGRES_DBNAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - "easytrack-postgres-vol:/var/lib/postgresql/data"
+
+    networks:
+      - "easytrack-network"
+
+  # pgadmin4 database management tool
+  pgadmin4:
+    container_name: easytrack-pgadmin4
+
+    image: dpage/pgadmin4
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: easytrack@email.com
+      PGADMIN_DEFAULT_PASSWORD: easytrack
+
+    ports:
+      - "5050:80"
+
+    volumes:
+      - "easytrack-pgadmin4-vol:/var/lib/pgadmin"
+
+    networks:
+      - "easytrack-network"
+
+volumes:
+  easytrack-postgres-vol:
+  easytrack-pgadmin4-vol:
+
+networks:
+  easytrack-network:
+    external: true

@@ -1,0 +1,394 @@
+syntax = "proto3";
+option java_package = "inha.nsl.easytrack";
+
+
+// user management module
+message Register{
+  message Request{
+    string username = 1; // alphanumeric, e.g., "john123", minimum 4 characters
+    string name = 2; // e.g., "John Doe"
+    string password = 3; // minimum 4 characters
+  }
+  message Response{
+    bool success = 1; // true if registration successful, false otherwise
+    string message = 2; // e.g., "Username already exists, invalid username, etc."
+  }
+}
+message Login{
+  message Request{
+    string username = 1; // alphanumeric, e.g., "john123"
+    string password = 2; // minimum 4 characters
+  }
+  message Response{
+    bool success = 1; // true if login successful, false otherwise
+    string message = 2; // e.g., "Invalid username or password"
+    int32 userId = 3; // e.g., 12
+    string name = 4; // e.g., "John Doe"
+    string sessionKey = 5; // sessionKey = password
+  }
+}
+message LoginWithGoogle{
+  message Request{
+    string idToken = 1;
+  }
+  message Response{
+    bool success = 1;
+    int32 userId = 2;
+    string sessionKey = 3;
+  }
+}
+message SetTag {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    string tag = 3;
+  }
+  message Response{
+    bool success = 1;
+  }
+}
+message GetTag {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+  }
+  message Response{
+    bool success = 1;
+    string tag = 2;
+  }
+}
+message BindUserToCampaign {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+  }
+  message Response{
+    bool success = 1;
+    bool isFirstTimeBinding = 2;
+    int64 campaignStartTimestamp = 3;
+  }
+}
+message RetrieveParticipants {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+  }
+  message Response{
+    bool success = 1;
+    repeated int32 userId = 2;
+    repeated string email = 3;
+    repeated string name = 4;
+  }
+}
+message RetrieveParticipantStats {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    string targetEmail = 3;
+    int32 targetCampaignId = 4;
+  }
+  message Response{
+    bool success = 1;
+    int64 campaignJoinTimestamp = 2;
+    int64 lastSyncTimestamp = 3;
+    int64 lastHeartbeatTimestamp = 4;
+    int32 amountOfSubmittedDataSamples = 5;
+    repeated int32 dataSourceId = 6;
+    repeated int32 perDataSourceAmountOfData = 7;
+    repeated int64 perDataSourceLastSyncTimestamp = 8;
+  }
+}
+
+// campaign management module
+message RegisterCampaign {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+    string name = 4;
+    string notes = 5;
+    string configJson = 6;
+    int64 startTimestamp = 7;
+    int64 endTimestamp = 8;
+  }
+  message Response{
+    bool success = 1;
+    int32 campaignId = 2;
+  }
+}
+message DeleteCampaign {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+  }
+  message Response{
+    bool success = 1;
+  }
+}
+message RetrieveCampaigns {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    bool myCampaignsOnly = 3;
+  }
+  message Response{
+    bool success = 1;
+    repeated int32 campaignId = 2;
+    repeated string name = 3;
+    repeated string notes = 4;
+    repeated int64 startTimestamp = 5;
+    repeated int64 endTimestamp = 6;
+    repeated string creatorEmail = 7;
+    repeated string configJson = 8;
+    repeated int32 participantCount = 9;
+  }
+}
+message RetrieveCampaign {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+  }
+  message Response{
+    bool success = 1;
+    string name = 2;
+    string notes = 3;
+    int64 startTimestamp = 4;
+    int64 endTimestamp = 5;
+    string creatorEmail = 6;
+    string configJson = 7;
+    int32 participantCount = 8;
+  }
+}
+
+// data source management module
+message BindDataSource {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    string name = 3;
+    string iconName = 4;
+  }
+  message Response{
+    bool success = 1;
+    int32 dataSourceId = 2;
+    string iconName = 3;
+  }
+}
+message RetrieveDataSources {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+  }
+  message Response{
+    bool success = 1;
+    repeated int32 dataSourceId = 2;
+    repeated string name = 3;
+    repeated string creatorEmail = 4;
+    repeated string iconName = 5;
+  }
+}
+
+// data management module
+message SubmitDataRecord {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+    int64 timestamp = 4;
+    int32 dataSource = 5;
+    float accuracy = 6;
+    bytes value = 7;
+  }
+  message Response{
+    bool success = 1;
+  }
+}
+message SubmitDataRecords {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+    repeated int64 timestamp = 4;
+    repeated int32 dataSource = 5;
+    repeated float accuracy = 6;
+    repeated bytes value = 7;
+  }
+  message Response{
+    bool success = 1;
+  }
+}
+message RetrieveKNextDataRecords {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    string targetEmail = 3;
+    int32 targetCampaignId = 4;
+    int32 targetDataSourceId = 5;
+    int32 k = 6;
+    int32 fromTimestamp = 7;
+  }
+  message Response{
+    bool success = 1;
+    repeated int64 timestamp = 2;
+    repeated bytes value = 4;
+  }
+}
+message RetrieveFilteredDataRecords{
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    string targetEmail = 3;
+    int32 targetCampaignId = 4;
+    int32 targetDataSourceId = 5;
+    int64 fromTimestamp = 6;
+    int64 tillTimestamp = 7;
+    bool simplifyIfTooLarge = 8;
+  }
+  message Response{
+    bool success = 1;
+    repeated int64 timestamp = 2;
+    repeated int32 dataSource = 3;
+    repeated bytes value = 4;
+  }
+}
+message DownloadDumpfile{
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+    string targetEmail = 4;
+  }
+  message Response{
+    bool success = 1;
+    bytes dump = 2;
+  }
+}
+
+// statistics module
+message SubmitHeartbeat {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+  }
+  message Response{
+    bool success = 1;
+  }
+}
+
+// communication management module
+message SubmitDirectMessage {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    string targetEmail = 3;
+    string subject = 4;
+    string content = 5;
+  }
+  message Response{
+    bool success = 1;
+    int32 id = 2;
+  }
+}
+message RetrieveUnreadDirectMessages {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+  }
+  message Response{
+    bool success = 1;
+    repeated int32 id = 2;
+    repeated int32 campaignId = 3;
+    repeated string sourceEmail = 4;
+    repeated int64 timestamp = 5;
+    repeated string subject = 6;
+    repeated string content = 7;
+  }
+}
+message SubmitNotification {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+    int64 timestamp = 4;
+    string subject = 5;
+    string content = 6;
+  }
+  message Response{
+    bool success = 1;
+    int32 id = 2;
+  }
+}
+message RetrieveUnreadNotifications {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+  }
+  message Response{
+    bool success = 1;
+    repeated int32 id = 2;
+    repeated int32 campaignId = 3;
+    repeated int64 timestamp = 4;
+    repeated string subject = 5;
+    repeated string content = 6;
+  }
+}
+
+
+service ETService {
+  // user management module
+  rpc register (Register.Request) returns (Register.Response) {}
+  rpc login (Login.Request) returns (Login.Response) {}
+  rpc loginWithGoogle (LoginWithGoogle.Request) returns (LoginWithGoogle.Response) {}
+  rpc setTag (SetTag.Request) returns (SetTag.Response) {}
+  rpc getTag (GetTag.Request) returns (GetTag.Response) {}
+  rpc bindUserToCampaign (BindUserToCampaign.Request) returns (BindUserToCampaign.Response) {}
+  rpc retrieveParticipants (RetrieveParticipants.Request) returns (RetrieveParticipants.Response) {}
+  rpc retrieveParticipantStats (RetrieveParticipantStats.Request) returns (RetrieveParticipantStats.Response) {}
+
+  // campaign management module
+  rpc registerCampaign (RegisterCampaign.Request) returns (RegisterCampaign.Response) {}
+  rpc deleteCampaign (DeleteCampaign.Request) returns (DeleteCampaign.Response) {}
+  rpc retrieveCampaigns (RetrieveCampaigns.Request) returns (RetrieveCampaigns.Response) {}
+  rpc retrieveCampaign (RetrieveCampaign.Request) returns (RetrieveCampaign.Response) {}
+
+  // data source management module
+  rpc bindDataSource (BindDataSource.Request) returns (BindDataSource.Response) {}
+  rpc retrieveDataSources (RetrieveDataSources.Request) returns (RetrieveDataSources.Response) {}
+
+  // data management module
+  rpc submitDataRecord (SubmitDataRecord.Request) returns (SubmitDataRecord.Response) {}
+  rpc submitDataRecords (SubmitDataRecords.Request) returns (SubmitDataRecords.Response) {}
+  rpc retrieveKNextDataRecords (RetrieveKNextDataRecords.Request) returns (RetrieveKNextDataRecords.Response) {}
+  rpc retrieveFilteredDataRecords (RetrieveFilteredDataRecords.Request) returns (RetrieveFilteredDataRecords.Response) {}
+  rpc downloadDumpfile (DownloadDumpfile.Request) returns (DownloadDumpfile.Response){}
+
+  // statistics module
+  rpc submitHeartbeat (SubmitHeartbeat.Request) returns (SubmitHeartbeat.Response) {}
+
+  // communication management module
+  rpc submitDirectMessage (SubmitDirectMessage.Request) returns (SubmitDirectMessage.Response) {}
+  rpc retrieveUnreadDirectMessages (RetrieveUnreadDirectMessages.Request) returns (RetrieveUnreadDirectMessages.Response) {}
+  rpc submitNotification (SubmitNotification.Request) returns (SubmitNotification.Response) {}
+  rpc retrieveUnreadNotifications (RetrieveUnreadNotifications.Request) returns (RetrieveUnreadNotifications.Response) {}
+}
+
+
+/*
+gRPC HOWTO:
+Compile into python script:
+    python -m grpc_tools.protoc -I=[input directory] --python_out=[output directory] --grpc_python_out=[output directory] [file name].proto
+    python -m grpc_tools.protoc -I=./et_protos/ --python_out=./et_grpcs/ --grpc_python_out=./et_grpcs/ et_service.proto
+Compile into java source:
+    protoc --java_out=[output directory] --grpc_java_out=[output directory] [file name].proto
+    protoc -I=./et_protos/ --java_out=./et_grpcs/ --grpc_java_out=./et_grpcs/ et_service.proto
+Compile into dart / flutter:
+    protoc -I=[input directory] --dart_out=grpc:[output directory] [file name].proto
+Compile into swift:
+    protoc -I=[input directory] --swift_out=[output directory] --grpc-swift_out=[output directory] [file name].proto
+etc.
+*/

@@ -1,0 +1,47 @@
+# grpc
+server {
+    location / {
+        proxy_set_header        Host                    $host;
+        proxy_set_header        X-Real-IP               $remote_addr;
+        proxy_set_header        X-Forwarded-For         $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto       $scheme;
+
+        proxy_pass              http://10.10.2.6:50051;
+    }
+
+    listen      50051;
+    server_name etdb2.myvnc.com;
+}
+
+# dashboard over https
+server {
+    location / {
+        proxy_set_header        Host                    $host;
+        proxy_set_header        X-Real-IP               $remote_addr;
+        proxy_set_header        X-Forwarded-For         $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto       $scheme;
+
+        proxy_pass              https://10.10.2.6:80;
+    }
+
+    server_name etdb2.myvnc.com; # managed by Certbot
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/etdb2.myvnc.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/etdb2.myvnc.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+# dashboard over http
+server {
+    if ($host = etdb2.myvnc.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name etdb2.myvnc.com;
+    return 404; # managed by Certbot
+}

@@ -1,0 +1,8 @@
+venv
+venv/**
+.idea
+.idea/**
+tmp
+**/.DS_Store
+**/__pycache__
+**/migrations
