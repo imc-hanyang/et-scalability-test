@@ -29,18 +29,18 @@ def amounts_of_data_routine():
                 for db_data_source in db_data_sources:
                     if db_data_source is not None:
                         exists = (
-                                session.execute(
-                                    'select count(*) from "stats"."perDataSourceStats" where "campaignId"=%s and '
-                                    '"userId"=%s and "dataSourceId"=%s allow filtering;',
-                                    (db_campaign.id, db_user.id, db_data_source.id),
-                                    timeout=300.0,
-                                ).one()[0]
-                                > 0
+                            session.execute(
+                                'select count(*) from "stats"."perDataSourceStats" where "campaignId"=%s and '
+                                '"userId"=%s and "dataSourceId"=%s allow filtering;',
+                                (db_campaign.id, db_user.id, db_data_source.id),
+                                timeout=300.0,
+                            ).one()[0]
+                            > 0
                         )
                         if not exists:
                             session.execute(
                                 'insert into "stats"."perDataSourceStats"("campaignId", "userId", "dataSourceId") '
-                                'values (%s,%s,%s);',
+                                "values (%s,%s,%s);",
                                 (db_campaign.id, db_user.id, db_data_source.id),
                             )
                         timestamps = session.execute(
@@ -143,8 +143,8 @@ def backup_routine():
             db_participants = all_db_participants[db_campaign.id]
 
             if (
-                    db_campaign.id in campaign_backup_threads
-                    and campaign_backup_threads[db_campaign.id].is_alive()
+                db_campaign.id in campaign_backup_threads
+                and campaign_backup_threads[db_campaign.id].is_alive()
             ):
                 continue
             else:

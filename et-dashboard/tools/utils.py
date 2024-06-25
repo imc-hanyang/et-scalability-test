@@ -3,6 +3,7 @@ import hashlib
 import os
 import re
 import time
+
 import pytz
 
 from tools import settings
@@ -23,13 +24,15 @@ def get_timestamp_ms():
 def calculate_day_number(join_timestamp):
     then = datetime.datetime.fromtimestamp(
         float(join_timestamp) / 1000,
-        tz=pytz.timezone('Asia/Seoul'),
-    ).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+        tz=pytz.timezone("Asia/Seoul"),
+    ).replace(hour=0, minute=0, second=0, microsecond=0)
     then += datetime.timedelta(days=1)
 
-    now = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    now = (
+        datetime.utcnow()
+        .replace(tzinfo=pytz.timezone("Asia/Seoul"))
+        .replace(hour=0, minute=0, second=0, microsecond=0)
+    )
     now += datetime.timedelta(days=1)
 
     return (now - then).days
@@ -41,16 +44,14 @@ def timestamp_to_readable_string(timestamp_ms):
     else:
         return datetime.datetime.fromtimestamp(
             float(timestamp_ms) / 1000,
-            tz=pytz.timezone('Asia/Seoul'),
-        ).strftime(
-            "%m/%d (%a), %I:%M %p"
-        )
+            tz=pytz.timezone("Asia/Seoul"),
+        ).strftime("%m/%d (%a), %I:%M %p")
 
 
 def timestamp_to_web_string(timestamp_ms):
     date_time = datetime.datetime.fromtimestamp(
         float(timestamp_ms) / 1000,
-        tz=pytz.timezone('Asia/Seoul'),
+        tz=pytz.timezone("Asia/Seoul"),
     )
     date_part = "-".join(
         [str(date_time.year), "%02d" % date_time.month, "%02d" % date_time.day]

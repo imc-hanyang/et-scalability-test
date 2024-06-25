@@ -165,7 +165,7 @@ message RetrieveCampaign {
 }
 
 // data source management module
-message BindDataSource {
+message CreateDataSource {
   message Request{
     int32 userId = 1;
     string sessionKey = 2;
@@ -174,8 +174,7 @@ message BindDataSource {
   }
   message Response{
     bool success = 1;
-    int32 dataSourceId = 2;
-    string iconName = 3;
+    int32 dataSourceId = 3;
   }
 }
 message RetrieveDataSources {
@@ -357,7 +356,7 @@ service ETService {
   rpc retrieveCampaign (RetrieveCampaign.Request) returns (RetrieveCampaign.Response) {}
 
   // data source management module
-  rpc bindDataSource (BindDataSource.Request) returns (BindDataSource.Response) {}
+  rpc createDataSource (CreateDataSource.Request) returns (CreateDataSource.Response) {}
   rpc retrieveDataSources (RetrieveDataSources.Request) returns (RetrieveDataSources.Response) {}
 
   // data management module

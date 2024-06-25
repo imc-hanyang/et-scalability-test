@@ -1,3 +1,4 @@
+import json
 import time
 
 import grpc
@@ -16,7 +17,7 @@ def main():
     # Try to register new dev user
     email = "dev@easytrack.com"
     req = et_service_pb2.Register.Request(
-        username=email[:email.index("@")],
+        username=email[: email.index("@")],
         name="EasyTrack Developer",
         password=email,
     )
@@ -26,7 +27,7 @@ def main():
 
     # Log in as dev user (ID = 0)
     req = et_service_pb2.Login.Request(
-        username=email[:email.index("@")],
+        username=email[: email.index("@")],
         password=email,
     )
     res = stub.login(request=req)
@@ -36,6 +37,30 @@ def main():
     session_key = res.sessionKey
     print(f"Dev user logged in (userId={res.userId})")
 
+    # Create data sources
+    config_json = []
+    for data_source_name in ["DATA", "LOG"]:
+        # Create data source
+        req = et_service_pb2.CreateDataSource.Request(
+            userId=user_id,
+            sessionKey=session_key,
+            name=data_source_name,
+            iconName="miscellaneous-data-sources.png",
+        )
+        res = stub.createDataSource(request=req)
+        assert res.success
+        print(f"Created data source '{data_source_name}' (dataSourceId={res.dataSourceId})")
+
+        # Append to config_json
+        config_json.append(
+            {
+                "name": data_source_name,
+                "icon_name": "miscellaneous-data-sources.png",
+                "config_json": {},
+                "data_source_id": res.dataSourceId,
+            }
+        )
+
     # Try to register a new campaign
     campaign_id = 0
     req = et_service_pb2.RegisterCampaign.Request(
@@ -44,7 +69,7 @@ def main():
         campaignId=campaign_id,
         name="Scalability Test",
         notes="A campaign for testing the scalability of the system.",
-        configJson="{}",
+        configJson=json.dumps(config_json),
         startTimestamp=int(time.time() * 1000),
         endTimestamp=int(time.time() * 1000 + 30 * 24 * 60 * 60 * 1000),
     )
@@ -61,27 +86,6 @@ def main():
     res = stub.retrieveCampaign(request=req)
     assert res.success
     print(f"Retrieved campaign (campaignId={campaign_id})")
-
-    # Bind DATA and LOG data sources
-    req = et_service_pb2.BindDataSource.Request(
-        userId=user_id,
-        sessionKey=session_key,
-        name="DATA",
-        iconName="miscellaneous-data-sources.png",
-    )
-    res = stub.bindDataSource(request=req)
-    assert res.success
-    print(f"Bound DATA data source (dataSourceId={res.dataSourceId})")
-
-    req = et_service_pb2.BindDataSource.Request(
-        userId=user_id,
-        sessionKey=session_key,
-        name="LOG",
-        iconName="miscellaneous-data-sources.png",
-    )
-    res = stub.bindDataSource(request=req)
-    assert res.success
-    print(f"Bound LOG data source (dataSourceId={res.dataSourceId})")
 
     # Create and bind 2048 users as campaign participants (id=1, 2, ..., 1024)
     for i in tqdm(range(1, 2049), desc="Creating participants", leave=False):

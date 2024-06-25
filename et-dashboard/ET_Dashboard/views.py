@@ -17,6 +17,7 @@ from django.contrib.auth.models import User as dj_User
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
+
 # Django
 from django.views.decorators.http import require_http_methods
 
@@ -89,7 +90,6 @@ def handle_development_login_api(request):
         if dj_User.objects.filter(email=dev_email).exists():
             dj_user = dj_User.objects.get(email=dev_email)
         else:
-            dj_User.objects.create_user()
             dj_user = dj_User.objects.create_user(
                 username=dev_email, email=dev_email, password=dev_email
             )

@@ -24,9 +24,7 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         # verify that request.username is minimum 4 characters long
         if len(request.username) < 3:
             print(f"{timestamp}: register(); invalid username")
-            grpc_response.message = (
-                "Username must be minimum 4 characters long"
-            )
+            grpc_response.message = "Username must be minimum 4 characters long"
             return grpc_response
         # verify that password is minimum 4 characters long
         if len(request.password) < 3:
@@ -70,9 +68,7 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         # verify that request.username is minimum 3 characters long
         if len(request.username) < 3:
             print(f"{timestamp}: register(); invalid username")
-            grpc_response.message = (
-                "Username must be minimum 4 characters long"
-            )
+            grpc_response.message = "Username must be minimum 4 characters long"
             return grpc_response
         # verify that password is minimum 3 characters long
         if len(request.password) < 3:
@@ -301,8 +297,9 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
 
         is_not_none = None not in [db_user, db_campaign]
         session_key_valid = db_user.sessionKey == request.sessionKey
-        user_matches = db_user.id == db_campaign.creatorId or db.user_is_bound_to_campaign(
-            db_user=db_user, db_campaign=db_campaign
+        user_matches = (
+            db_user.id == db_campaign.creatorId
+            or db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign)
         )
         if is_not_none and session_key_valid and user_matches:
             grpc_response.name = db_campaign.name
@@ -326,11 +323,11 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
     # endregion
 
     # region Data source management module
-    def bindDataSource(self, request, context):
+    def createDataSource(self, request, context):
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: bindDataSource()")
+        print(f"{timestamp}: createDataSource()")
 
-        grpc_response = et_service_pb2.BindDataSource.Response()
+        grpc_response = et_service_pb2.CreateDataSource.Response()
         grpc_response.success = True
 
         db_user = db.get_user(user_id=request.userId)
@@ -346,10 +343,9 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 )
                 db_data_source = db.get_data_source(data_source_name=request.name)
             grpc_response.dataSourceId = db_data_source.id
-            grpc_response.iconName = db_data_source.iconName
             grpc_response.success = True
 
-        print(f"{timestamp}: bindDataSource(); success = {grpc_response.success}")
+        print(f"{timestamp}: createDataSource(); success = {grpc_response.success}")
         return grpc_response
 
     def retrieveDataSources(self, request, context):
