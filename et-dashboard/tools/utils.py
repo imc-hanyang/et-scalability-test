@@ -29,7 +29,7 @@ def calculate_day_number(join_timestamp):
     then += datetime.timedelta(days=1)
 
     now = (
-        datetime.utcnow()
+        datetime.datetime.utcnow()
         .replace(tzinfo=pytz.timezone("Asia/Seoul"))
         .replace(hour=0, minute=0, second=0, microsecond=0)
     )
