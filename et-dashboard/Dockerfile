@@ -23,6 +23,6 @@ RUN python manage.py migrate
 EXPOSE 8080
 CMD ["python", "manage.py", "runserver", "0:8080"]
 
-# build: `docker build -t et-dashboard:1.0 .`
+# build: `docker build -t qobiljon/et-dashboard:1.0 .`
 # create network: `docker network create et-network`
-# run: `docker run -p 8080:8080 --network et-network --name et-dashboard -d et-dashboard:1.0`
+# run: `docker run -p 8080:8080 --network et-network --name et-dashboard -d qobiljon/et-dashboard:1.0`

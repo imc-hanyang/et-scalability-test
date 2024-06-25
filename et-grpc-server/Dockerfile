@@ -18,6 +18,6 @@ RUN pip install -r requirements.txt
 EXPOSE 5432
 CMD ["python", "server.py"]
 
-# build: `docker build -t et-grpc-server:1.0 .`
+# build: `docker build -t qobiljon/et-grpc-server:1.0 .`
 # create network: `docker network create et-network`
-# run: `docker run -p 5432:5432 --network et-network --name et-grpc-server -d et-grpc-server:1.0`
+# run: `docker run -p 5432:5432 --network et-network --name et-grpc-server -d qobiljon/et-grpc-server:1.0`
