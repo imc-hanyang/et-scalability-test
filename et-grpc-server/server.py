@@ -22,14 +22,14 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         grpc_response.success = False
 
         # verify that request.username is minimum 4 characters long
-        if len(request.username) < 4:
+        if len(request.username) < 3:
             print(f"{timestamp}: register(); invalid username")
             grpc_response.message = (
                 "Username must be minimum 4 characters long"
             )
             return grpc_response
         # verify that password is minimum 4 characters long
-        if len(request.password) < 4:
+        if len(request.password) < 3:
             print(f"{timestamp}: register(); invalid password")
             grpc_response.message = "Password must be minimum 4 characters long"
             return grpc_response
@@ -67,15 +67,15 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         grpc_response = et_service_pb2.Login.Response()
         grpc_response.success = False
 
-        # verify that request.username is minimum 4 characters long
-        if len(request.username) < 4:
+        # verify that request.username is minimum 3 characters long
+        if len(request.username) < 3:
             print(f"{timestamp}: register(); invalid username")
             grpc_response.message = (
                 "Username must be minimum 4 characters long"
             )
             return grpc_response
-        # verify that password is minimum 4 characters long
-        if len(request.password) < 4:
+        # verify that password is minimum 3 characters long
+        if len(request.password) < 3:
             print(f"{timestamp}: register(); invalid password")
             grpc_response.message = "Password must be minimum 4 characters long"
             return grpc_response

@@ -14,20 +14,20 @@ def main():
     stub = et_service_pb2_grpc.ETServiceStub(channel)
 
     # Try to register new dev user
-    username = "dev@easytrack.com"
+    email = "dev@easytrack.com"
     req = et_service_pb2.Register.Request(
-        username=username,
+        username=email[:email.index("@")],
         name="EasyTrack Developer",
-        password=username,
+        password=email,
     )
     res = stub.register(request=req)
     if res.success:
-        print(f"Dev user registered (username={username})")
+        print(f"Dev user registered (username={email})")
 
     # Log in as dev user (ID = 0)
     req = et_service_pb2.Login.Request(
-        username=username,
-        password=username,
+        username=email[:email.index("@")],
+        password=email,
     )
     res = stub.login(request=req)
     assert res.success
@@ -86,20 +86,20 @@ def main():
     # Create and bind 2048 users as campaign participants (id=1, 2, ..., 1024)
     for i in tqdm(range(1, 2049), desc="Creating participants", leave=False):
         # Try to register new participant
-        username = (
+        email = (
             f"participant{i}"  # e.g. participant1, participant2, ..., participant1024
         )
         req = et_service_pb2.Register.Request(
-            username=username,
+            username=email,
             name=f"Participant {i}",
-            password=username,
+            password=email,
         )
         stub.register(request=req)
 
         # Login participant
         req = et_service_pb2.Login.Request(
-            username=username,
-            password=username,
+            username=email,
+            password=email,
         )
         res = stub.login(request=req)
         assert res.success

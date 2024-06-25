@@ -1,12 +1,9 @@
 # base image
 FROM python:3.9-slim
 
-# environment variables
+# environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-
-# install dependencies (gcc-c++ python3-devel)
-RUN apt-get update && apt-get install -y gcc g++ python3-dev
 
 # set working directory
 RUN mkdir /home/et_grpc
@@ -14,12 +11,11 @@ COPY . /home/et_grpc
 WORKDIR /home/et_grpc
 
 # install dependencies
+RUN apt-get update && apt-get install -y gcc g++ python3-dev
 RUN pip install -r requirements.txt
 
-# open ports
+# run grpc server
 EXPOSE 5432
-
-# run web server
 CMD ["python", "server.py"]
 
 # build: `docker build -t et-grpc-server:1.0 .`

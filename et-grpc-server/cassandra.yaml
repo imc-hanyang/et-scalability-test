@@ -1,7 +1,6 @@
-# Partial Docker Compose file for Easytrack project
-# Includes Cassandra container and its dependencies
-
-version: "3.8"
+# Components:
+# - Cassandra database (et-cassandra)
+# - Initialization script to create keyspace and tables (schema.cql)
 
 services:
   et-cassandra:
@@ -32,5 +31,6 @@ volumes:
 
 networks:
   default:
-    external:
-      name: et-network  # create externally: `docker network create et-network`
+    # create network externally: `docker network create et-network`
+    name: et-network
+    external: true

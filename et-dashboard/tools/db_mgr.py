@@ -11,7 +11,7 @@ from tools import settings, utils
 def get_cassandra_session():
     if settings.cassandra_session is None:
         settings.cassandra_cluster = Cluster(
-            contact_points=["localhost"],
+            contact_points=["et-cassandra"],
             executor_threads=2048,
             connect_timeout=1200,
         )
