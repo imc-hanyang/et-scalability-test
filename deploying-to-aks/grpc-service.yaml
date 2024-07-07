@@ -2,10 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: grpc-service
+  labels:
+    app: easytrack
 spec:
   type: LoadBalancer
   selector:
-    easytrack: grpc
+    app: easytrack
   ports:
     - protocol: TCP
       port: 50051

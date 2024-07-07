@@ -5,5 +5,5 @@ metadata:
 spec:
   hostNetwork: true
   containers:
-  - name: nginx
-    image: nginx
+    - name: nginx
+      image: nginx

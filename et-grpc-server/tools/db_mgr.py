@@ -1,5 +1,6 @@
 import json
 import time
+import os
 from os.path import exists, join
 
 from cassandra.cluster import Cluster
@@ -10,8 +11,16 @@ from tools import settings, utils
 # region common part
 def get_cassandra_session():
     if settings.cassandra_cluster is None:
+        contact_points = os.environ['CASSANDRA_IP_ADDRESSES'].split(',')
+        i = 0
+        while i < len(contact_points):
+            contact_points[i] = contact_points[i].strip()
+            if not contact_points[i]:
+                del contact_points[i]
+            else:
+                i += 1
         settings.cassandra_cluster = Cluster(
-            contact_points=["et-cassandra"],
+            contact_points=contact_points,
             executor_threads=2048,
             connect_timeout=1200,
         )

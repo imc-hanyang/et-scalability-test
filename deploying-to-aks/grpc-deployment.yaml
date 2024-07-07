@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-deployment
+  labels:
+    app: easytrack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: easytrack
+  template:
+    metadata:
+      labels:
+        app: easytrack
+    spec:
+      containers:
+        - name: et-grpc-server
+          image: qobiljon/et-grpc-server:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50051
+          env:
+          - name: CASSANDRA_IP_ADDRESSES
+            value: "10.224.0.90"

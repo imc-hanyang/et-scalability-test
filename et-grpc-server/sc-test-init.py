@@ -7,7 +7,7 @@ from tqdm import tqdm
 from et_grpcs import et_service_pb2, et_service_pb2_grpc
 
 ip_address = "localhost"
-port = 5432
+port = 50051
 
 
 def main():

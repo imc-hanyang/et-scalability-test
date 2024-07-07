@@ -15,8 +15,8 @@ spec:
         easytrack: dashboard
     spec:
       containers:
-        - image: qobiljon/et-dashboard:1.4
+        - image: qobiljon/et-dashboard:1.0
           name: et-dashboard
           imagePullPolicy: Always
           ports:
-            - containerPort: 8443
+            - containerPort: 8080
