@@ -188,8 +188,8 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         )
 
         if (
-                None not in [db_user, db_campaign]
-                and db_user.sessionKey == request.sessionKey
+            None not in [db_user, db_campaign]
+            and db_user.sessionKey == request.sessionKey
         ):
             for row in db.get_campaign_participants(db_campaign=db_campaign):
                 grpc_response.userId.extend([row.id])
@@ -214,9 +214,9 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         db_campaign = db.get_campaign(campaign_id=request.campaignId)
 
         if (
-                db_user is not None
-                and db_user.sessionKey == request.sessionKey
-                and (db_campaign is None or db_campaign.creatorId == db_user.id)
+            db_user is not None
+            and db_user.sessionKey == request.sessionKey
+            and (db_campaign is None or db_campaign.creatorId == db_user.id)
         ):
             db.create_or_update_campaign(
                 db_creator_user=db_user,
@@ -245,8 +245,8 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         )
 
         if (
-                None not in [db_user, db_campaign]
-                and db_user.sessionKey == request.sessionKey
+            None not in [db_user, db_campaign]
+            and db_user.sessionKey == request.sessionKey
         ):
             db.delete_campaign(db_campaign=db_campaign)
             grpc_response.success = True
@@ -298,8 +298,8 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         is_not_none = None not in [db_user, db_campaign]
         session_key_valid = db_user.sessionKey == request.sessionKey
         user_matches = (
-                db_user.id == db_campaign.creatorId
-                or db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign)
+            db_user.id == db_campaign.creatorId
+            or db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign)
         )
         if is_not_none and session_key_valid and user_matches:
             grpc_response.name = db_campaign.name
@@ -449,21 +449,21 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         db_data_source = db.get_data_source(data_source_id=request.targetDataSourceId)
 
         if (
-                None not in [db_user, db_target_user, db_target_campaign, db_data_source]
-                and db_user.sessionKey == request.sessionKey
-                and request.k <= 500
-                and (
+            None not in [db_user, db_target_user, db_target_campaign, db_data_source]
+            and db_user.sessionKey == request.sessionKey
+            and request.k <= 500
+            and (
                 db_user.id == db_target_campaign.creatorId
                 or db.user_is_bound_to_campaign(
-            db_user=db_user, db_campaign=db_target_campaign
-        )
-        )
-                and (
+                    db_user=db_user, db_campaign=db_target_campaign
+                )
+            )
+            and (
                 db_target_user["id"] == db_target_campaign.creatorId
                 or db.user_is_bound_to_campaign(
-            db_user=db_target_user, db_campaign=db_target_campaign
-        )
-        )
+                    db_user=db_target_user, db_campaign=db_target_campaign
+                )
+            )
         ):
             data_records = db.get_next_k_data_records(
                 db_campaign=db_target_campaign,
@@ -537,12 +537,12 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         db_target_user = db.get_user(email=request.targetEmail)
 
         if (
-                None not in [db_user, db_campaign, db_target_user]
-                and db_user.sessionKey == request.sessionKey
-                and db_campaign.creatorId == db_user.id
-                and db.user_is_bound_to_campaign(
-            db_user=db_target_user, db_campaign=db_campaign
-        )
+            None not in [db_user, db_campaign, db_target_user]
+            and db_user.sessionKey == request.sessionKey
+            and db_campaign.creatorId == db_user.id
+            and db.user_is_bound_to_campaign(
+                db_user=db_target_user, db_campaign=db_campaign
+            )
         ):
             file_path = db.dump_data(db_campaign=db_campaign, db_user=db_target_user)
             with open(file_path, "rb") as r:
@@ -567,7 +567,7 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         db_campaign = db.get_campaign(campaign_id=request.campaignId)
 
         if None not in [db_user, db_campaign] and db.user_is_bound_to_campaign(
-                db_user=db_user, db_campaign=db_campaign
+            db_user=db_user, db_campaign=db_campaign
         ):
             db.update_user_heartbeat_timestamp(db_user=db_user, db_campaign=db_campaign)
             grpc_response.success = True
@@ -587,11 +587,11 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         db_target_user = db.get_user(email=request.targetEmail)
 
         if (
-                None not in [db_user, db_target_user, db_target_campaign]
-                and db_user.sessionKey == request.sessionKey
-                and db.user_is_bound_to_campaign(
-            db_user=db_target_user, db_campaign=db_target_campaign
-        )
+            None not in [db_user, db_target_user, db_target_campaign]
+            and db_user.sessionKey == request.sessionKey
+            and db.user_is_bound_to_campaign(
+                db_user=db_target_user, db_campaign=db_target_campaign
+            )
         ):
             grpc_response.campaignJoinTimestamp = db.get_participant_join_timestamp(
                 db_user=db_target_user, db_campaign=db_target_campaign
@@ -610,9 +610,9 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 )
             )
             for (
-                    data_source,
-                    amount_of_data,
-                    last_sync_time,
+                data_source,
+                amount_of_data,
+                last_sync_time,
             ) in db.get_participants_per_data_source_stats(
                 db_user=db_target_user, db_campaign=db_target_campaign
             ):
@@ -640,8 +640,8 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         db_target_user = db.get_user(email=request.targetEmail)
 
         if (
-                None not in [db_source_user, db_target_user]
-                and db_source_user.sessionKey == request.sessionKey
+            None not in [db_source_user, db_target_user]
+            and db_source_user.sessionKey == request.sessionKey
         ):
             db_direct_message = db.create_direct_message(
                 db_source_user=db_source_user,

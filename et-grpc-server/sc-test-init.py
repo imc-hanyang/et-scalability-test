@@ -49,7 +49,9 @@ def main():
         )
         res = stub.createDataSource(request=req)
         assert res.success
-        print(f"Created data source '{data_source_name}' (dataSourceId={res.dataSourceId})")
+        print(
+            f"Created data source '{data_source_name}' (dataSourceId={res.dataSourceId})"
+        )
 
         # Append to config_json
         config_json.append(
