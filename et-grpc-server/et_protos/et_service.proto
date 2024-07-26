@@ -385,8 +385,11 @@ Compile into python script:
 Compile into java source:
     protoc --java_out=[output directory] --grpc_java_out=[output directory] [file name].proto
     protoc -I=./et_protos/ --java_out=./et_grpcs/ --grpc_java_out=./et_grpcs/ et_service.proto
+Compile into jar archive:
+     protoc --proto_path=et_protos --java_out=et_grpcs/et_service.jar et_protos/et_service.proto
 Compile into dart / flutter:
     protoc -I=[input directory] --dart_out=grpc:[output directory] [file name].proto
+    protoc -I=./et_protos/ --dart_out=grpc:./et_grpcs/ et_service.proto
 Compile into swift:
     protoc -I=[input directory] --swift_out=[output directory] --grpc-swift_out=[output directory] [file name].proto
 etc.

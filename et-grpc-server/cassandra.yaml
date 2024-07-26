@@ -10,6 +10,12 @@ services:
       - "9042:9042"
     volumes:
       - "et-cassandra-vol:/var/lib/cassandra"
+    environment:
+      CASSANDRA_CLUSTER_NAME: et-cassandra
+      CASSANDRA_AUTHENTICATOR: PasswordAuthenticator
+      CASSANDRA_USER: cassandra
+      CASSANDRA_PASSWORD_SEEDER: yes
+      CASSANDRA_PASSWORD: cassandra
     healthcheck:
       test: [ "CMD", "cqlsh", "-u cassandra", "-p cassandra", "-e describe keyspaces" ]
       interval: 15s

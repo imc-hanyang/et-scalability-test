@@ -395,17 +395,13 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             db_campaign,
             db_data_source,
         ] and db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign):
-            f = db.get_file(
-                db_campaign=db_campaign,
+            db.store_data_record(
                 db_user=db_user,
+                db_campaign=db_campaign,
                 db_data_source=db_data_source,
-            )
-            db.store_data_record_to_file(
-                file=f,
                 timestamp=request.timestamp,
-                value=request.value,
+                value=request.value
             )
-            f.close()
             grpc_response.success = True
 
         # print(f'{timestamp}: submitDataRecord(); success = {grpc_response.success}')
@@ -418,22 +414,20 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         grpc_response = et_service_pb2.SubmitDataRecords.Response()
         grpc_response.success = False
 
-        # db_user = db.get_user(user_id=request.userId)
-        # db_campaign = db.get_campaign(campaign_id=request.campaignId)
+        db_user = db.get_user(user_id=request.userId)
+        db_campaign = db.get_campaign(campaign_id=request.campaignId)
 
-        # if None not in [db_user, db_campaign] and db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign) and len(request.timestamp) > 0:
-        #     # db.store_data_records(db_user=db_user, db_campaign=db_campaign, timestamp_list=request.timestamp, data_source_id_list=request.dataSource, value_list=request.value)
-        #     db.store_data_records_to_file(
-        #         db_user=db_user,
-        #         db_campaign=db_campaign,
-        #         timestamp_list=request.timestamp,
-        #         data_source_id_list=request.dataSource,
-        #         value_list=request.value,
-        #     )
-        #     grpc_response.success = True
+        if None not in [db_user, db_campaign] and db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign) and len(request.timestamp) > 0:
+            db.store_data_records(
+                db_user=db_user,
+                db_campaign=db_campaign,
+                timestamp_list=request.timestamp,
+                data_source_id_list=request.dataSource,
+                value_list=request.value
+            )
+            grpc_response.success = True
 
         # print(f'{timestamp} submitDataRecords(); success = {grpc_response.success}')
-        grpc_response.success = True
         return grpc_response
 
     def retrieveKNextDataRecords(self, request, context):

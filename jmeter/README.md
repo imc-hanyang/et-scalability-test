@@ -1,5 +1,5 @@
 ```bash
-cd results/__
+cd results/_MB/__
 ```
 
 ```bash
