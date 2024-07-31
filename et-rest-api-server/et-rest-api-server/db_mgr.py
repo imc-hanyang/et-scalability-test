@@ -2,78 +2,71 @@ from __future__ import annotations
 
 import os
 
+from cassandra import ConsistencyLevel
 from cassandra.auth import PlainTextAuthProvider
-from cassandra.cluster import Cluster, Session
+from cassandra.cluster import (EXEC_PROFILE_DEFAULT, Cluster, ExecutionProfile,
+                               Session)
+from cassandra.policies import RoundRobinPolicy
+from cassandra.query import BatchStatement
 
-cassandra_cluster: Cluster | None = None
-cassandra_session: Session | None = None
+cassandra_contact_points: [str] = []
 
 
-def init_connection():
-    # if already initialized, return
-    global cassandra_cluster, cassandra_session
-    if cassandra_cluster is not None:
-        return
-
-    # resolve contact points (IP addresses of cassandra nodes / seeds)
-    contact_points = os.environ["CASSANDRA_IP_ADDRESSES"].split(",")
+def parse_envs():
+    # cassandra contact points
+    global cassandra_contact_points
+    tmp = os.environ["CASSANDRA_IP_ADDRESSES"].split(",")
     i = 0
-    while i < len(contact_points):
-        contact_points[i] = contact_points[i].strip()
-        if not contact_points[i]:
-            del contact_points[i]
+    while i < len(tmp):
+        tmp[i] = tmp[i].strip()
+        if not tmp[i]:
+            del tmp[i]
         else:
             i += 1
+    cassandra_contact_points.clear()
+    cassandra_contact_points.extend(tmp)
+    print(f"Cassandra contact points: {tmp}")
 
+
+def get_cassandra_session() -> Session:
     # prepare ssl context
     # ssl_context = ssl.create_default_context()
     # ssl_context.check_hostname = False
     # ssl_context.verify_mode = ssl.CERT_NONE
 
-    # initialize cassandra session
-    cassandra_cluster = Cluster(
-        contact_points=contact_points,
-        executor_threads=2048,
-        connect_timeout=1200,
+    # execution profile (fast writes, ignore read)
+    execution_profile = ExecutionProfile(
+        request_timeout=600,  # seconds
+        consistency_level=ConsistencyLevel.ONE,  # write consistency level: only 1 node needs to acknowledge
+        load_balancing_policy=RoundRobinPolicy(),
+    )
+
+    # initialize a connection to cassandra cluster
+    cluster = Cluster(
+        contact_points=cassandra_contact_points,
+        executor_threads=4,  # number of threads to handle requests
+        connect_timeout=10,  # seconds
         # ssl_context=ssl_context,
+        execution_profiles={EXEC_PROFILE_DEFAULT: execution_profile},
         auth_provider=PlainTextAuthProvider(
             username=os.environ["CASSANDRA_ADMIN_USER"],
             password=os.environ["CASSANDRA_ADMIN_PASSWORD"],
         ),
     )
-    cassandra_session = cassandra_cluster.connect()
-    cassandra_session.default_timeout = 1200
+
+    return cluster.connect()
 
 
-def generate_users(n: int):
-    # create keyspace (if not exists)
-    global cassandra_session
-    cassandra_session.execute(
-        "CREATE KEYSPACE IF NOT EXISTS et WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1}"
-    )
-
-    # create 'user' table (if not exists)
-    cassandra_session.execute("CREATE TABLE IF NOT EXISTS et.user (id int PRIMARY KEY)")
-
-    # insert 'n' users (+ their data tables)
-    for i in range(1, n + 1):
-        # create user record
-        cassandra_session.execute(f"INSERT INTO et.user (id) VALUES (%s)", (i,))
-        # create user data table
-        cassandra_session.execute(
-            f"CREATE TABLE IF NOT EXISTS et.user_{i}_data (timestamp bigint PRIMARY KEY, data blob)"
-        )
-
-    print(f"Generated {n} users with their data tables")
-
-
-def save_data(
+def save_data_cassandra(
+    cassandra_session: Session,
     user_id: int,
-    timestamp: int,
-    data: bytes,
+    timestamps_arr: [int],
+    values_arr: [bytes],
 ):
-    global cassandra_session
-    cassandra_session.execute(
-        f"INSERT INTO et.user_{user_id}_data (timestamp, data) VALUES (%s, %s)",
-        (timestamp, data),
+    insert_stmt = cassandra_session.prepare(
+        f"INSERT INTO et.data (user_id, timestamp, value) VALUES (?, ?, ?)"
     )
+    batch_stmt = BatchStatement(consistency_level=ConsistencyLevel.ONE)
+    for timestamp, value in zip(timestamps_arr, values_arr):
+        batch_stmt.add(insert_stmt, (user_id, timestamp, value))
+    cassandra_session.execute(batch_stmt)

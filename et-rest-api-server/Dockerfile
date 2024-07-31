@@ -12,4 +12,4 @@ COPY . .
 EXPOSE 8000
 
 ENTRYPOINT ["python", "-m", "gunicorn"]
-CMD ["et-rest-api-server.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000"]
+CMD ["et-rest-api-server.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "--reload"]
