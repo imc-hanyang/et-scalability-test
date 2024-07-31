@@ -4,6 +4,7 @@ docker run -d -p 8000:8000 \
   -e CASSANDRA_ADMIN_PASSWORD=cassandra \
   --name et-rest-api-server qobiljon/et-rest-api-server:1.0
 
+docker network connect et-network et-rest-api-server
 
 #docker run -d -p 8000:8000 \
 #	--network et-network \
