@@ -1,0 +1,3 @@
+docker run --name et-scylla-1 --hostname et-scylla-1 -d scylladb/scylla --reactor-backend=epoll
+docker run --name et-scylla-2 --hostname et-scylla-2 -d scylladb/scylla --reactor-backend=epoll --seeds="$(docker inspect --format='{{ .NetworkSettings.IPAddress }}' et-scylla-1)"
+docker run --name et-scylla-3 --hostname et-scylla-3 -d scylladb/scylla --reactor-backend=epoll --seeds="$(docker inspect --format='{{ .NetworkSettings.IPAddress }}' et-scylla-1)"

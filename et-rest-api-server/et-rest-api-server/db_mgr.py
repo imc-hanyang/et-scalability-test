@@ -10,6 +10,8 @@ from cassandra.policies import RoundRobinPolicy
 from cassandra.query import BatchStatement
 
 cassandra_contact_points: [str] = []
+cassandra_cluster: Cluster | None = None
+cassandra_session: Session | None = None
 
 
 def parse_envs():
@@ -28,7 +30,9 @@ def parse_envs():
     print(f"Cassandra contact points: {tmp}")
 
 
-def get_cassandra_session() -> Session:
+def init_connection():
+    global cassandra_cluster, cassandra_session
+
     # prepare ssl context
     # ssl_context = ssl.create_default_context()
     # ssl_context.check_hostname = False
@@ -42,9 +46,9 @@ def get_cassandra_session() -> Session:
     )
 
     # initialize a connection to cassandra cluster
-    cluster = Cluster(
+    cassandra_cluster = Cluster(
         contact_points=cassandra_contact_points,
-        executor_threads=4,  # number of threads to handle requests
+        executor_threads=256,  # number of threads to handle requests
         connect_timeout=10,  # seconds
         # ssl_context=ssl_context,
         execution_profiles={EXEC_PROFILE_DEFAULT: execution_profile},
@@ -54,15 +58,15 @@ def get_cassandra_session() -> Session:
         ),
     )
 
-    return cluster.connect()
+    cassandra_session = cassandra_cluster.connect()
 
 
 def save_data_cassandra(
-    cassandra_session: Session,
     user_id: int,
     timestamps_arr: [int],
     values_arr: [bytes],
 ):
+    global cassandra_session
     insert_stmt = cassandra_session.prepare(
         f"INSERT INTO et.data (user_id, timestamp, value) VALUES (?, ?, ?)"
     )

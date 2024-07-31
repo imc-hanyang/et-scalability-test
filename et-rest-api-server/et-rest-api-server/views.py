@@ -10,6 +10,7 @@ from . import db_mgr
 
 load_dotenv()
 db_mgr.parse_envs()
+db_mgr.init_connection()
 
 
 @csrf_exempt
@@ -32,13 +33,12 @@ def upload_file(request):
     t1 = int(time.time() * 1000)
 
     # save data to database: Cassandra
-    cassandra_session = db_mgr.get_cassandra_session()
     db_mgr.save_data_cassandra(
-        cassandra_session=cassandra_session,
         user_id=user_id,
         timestamps_arr=timestamps,
         values_arr=values_arr,
     )
+
     t2 = int(time.time() * 1000)
 
     # return response
