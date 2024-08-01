@@ -16,7 +16,7 @@ db_mgr.init_connection()
 @csrf_exempt
 @require_http_methods(["POST"])
 def upload_file(request):
-    # parse request data
+    # parse request parameters
     t0 = int(time.time() * 1000)
     user_id = int(request.POST["user_id"])
     timestamp = int(request.POST["timestamp"])
@@ -24,21 +24,20 @@ def upload_file(request):
     for filename in request.FILES.keys():
         files.append(request.FILES[filename])
 
-    # read data from files
+    # read file data into memory
     timestamps, values_arr = [], []
-    values_arr = []
     for i, file in enumerate(files):
         timestamps.append(timestamp + i)
         values_arr.append(file.read())
-    t1 = int(time.time() * 1000)
 
     # save data to database: Cassandra
+    print(f"Saving {len(timestamps)} data points to Cassandra")
+    t1 = int(time.time() * 1000)
     db_mgr.save_data_cassandra(
         user_id=user_id,
         timestamps_arr=timestamps,
         values_arr=values_arr,
     )
-
     t2 = int(time.time() * 1000)
 
     # return response
