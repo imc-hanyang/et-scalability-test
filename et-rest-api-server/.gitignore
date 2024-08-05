@@ -186,3 +186,5 @@ cython_debug/
 # formatting
 .style.yapf
 sosw-data/
+
+cpu-stats-log.txt

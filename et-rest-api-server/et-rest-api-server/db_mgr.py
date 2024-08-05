@@ -38,11 +38,10 @@ def init_connection():
     # ssl_context.verify_mode = ssl.CERT_NONE
 
     # execution profile (fast writes, ignore read)
-    # execution_profile = ExecutionProfile(
-    #     request_timeout=600,  # seconds
-    #     consistency_level=ConsistencyLevel.ONE,  # write consistency level: only 1 node needs to acknowledge
-    #     load_balancing_policy=RoundRobinPolicy(),
-    # )
+    execution_profile = ExecutionProfile(
+        request_timeout=600,  # seconds
+        load_balancing_policy=RoundRobinPolicy(),
+    )
 
     # initialize a connection to cassandra cluster
     cassandra_cluster = Cluster(
@@ -50,7 +49,7 @@ def init_connection():
         executor_threads=256,  # number of threads to handle requests
         connect_timeout=10,  # seconds
         # ssl_context=ssl_context,
-        # execution_profiles={EXEC_PROFILE_DEFAULT: execution_profile},
+        execution_profiles={EXEC_PROFILE_DEFAULT: execution_profile},
         auth_provider=PlainTextAuthProvider(
             username=os.environ["CASSANDRA_ADMIN_USER"],
             password=os.environ["CASSANDRA_ADMIN_PASSWORD"],
@@ -58,28 +57,24 @@ def init_connection():
     )
 
     cassandra_session = cassandra_cluster.connect()
-    cassandra_session.default_timeout = 600  # seconds
+    # cassandra_session.default_timeout = 600  # seconds
 
 
-def save_data_cassandra(
+def save_data(
     user_id: int,
-    timestamps_arr: [int],
-    values_arr: [bytes],
+    values: [bytes],
 ):
     global cassandra_session
+
+    # prepare insert statement
     insert_stmt = cassandra_session.prepare(
-        f"INSERT INTO et.data (user_id, timestamp, value) VALUES (?, ?, ?)"
+        f"INSERT INTO et.data (user_id, value) VALUES (?, ?)"
     )
-    cur_size = 0
-    cur_batch = BatchStatement(consistency_level=ConsistencyLevel.ONE)
-    for timestamp, value in zip(timestamps_arr, values_arr):
-        cur_batch.add(insert_stmt, (user_id, timestamp, value))
-        cur_size += len(value)
-        if cur_size > 25 * 1024 * 1024:
-            cassandra_session.execute(cur_batch)
-            print(f"Saved {len(cur_batch)} batch data points to Cassandra")
-            cur_batch.clear()
-            cur_size = 0
-    if cur_size > 0:
-        cassandra_session.execute(cur_batch)
-        print(f"Saved {len(cur_batch)} batch data points to Cassandra (last batch)")
+
+    # save data points in batch (3 data points per batch)
+    batch_stmt = BatchStatement(consistency_level=ConsistencyLevel.ANY)
+    for i in range(len(values)):
+        batch_stmt.add(insert_stmt, (user_id, values[i]))
+        if i % 3 == 0 or i == len(values) - 1:
+            cassandra_session.execute(batch_stmt)
+            batch_stmt.clear()

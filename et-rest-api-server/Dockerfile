@@ -1,4 +1,4 @@
-FROM python:3.9.19-slim-bullseye
+FROM --platform=linux/amd64 python:3.9.19-slim-bullseye
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1

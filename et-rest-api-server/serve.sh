@@ -1,1 +1,0 @@
-gunicorn et-rest-api-server.asgi:application -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 --reload

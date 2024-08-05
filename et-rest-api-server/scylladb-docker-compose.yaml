@@ -1,8 +1,0 @@
-services:
-  et-scylla-db:
-    image: scylladb/scylla
-    container_name: et-scylla-db
-    ports:
-      - "9042:9042"
-    volumes:
-      - "./scylla.yaml:/etc/scylla/scylla.yaml"

@@ -1,6 +1,6 @@
+import json
 import time
 
-from django.core.files.uploadedfile import TemporaryUploadedFile
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -16,36 +16,24 @@ db_mgr.init_connection()
 @csrf_exempt
 @require_http_methods(["POST"])
 def upload_file(request):
-    # parse request parameters
-    t0 = int(time.time() * 1000)
+    # parse request
     user_id = int(request.POST["user_id"])
-    timestamp = int(request.POST["timestamp"])
-    files: [TemporaryUploadedFile] = []
-    for filename in request.FILES.keys():
-        files.append(request.FILES[filename])
+    values = []
+    for file in request.FILES.keys():
+        values.append(request.FILES[file].read())
 
-    # read file data into memory
-    timestamps, values_arr = [], []
-    for i, file in enumerate(files):
-        timestamps.append(timestamp + i)
-        values_arr.append(file.read())
-
-    # save data to database: Cassandra
-    print(f"Saving {len(timestamps)} data points to Cassandra")
-    t1 = int(time.time() * 1000)
-    db_mgr.save_data_cassandra(
+    # save data in database
+    t0 = int(time.time() * 1000)
+    db_mgr.save_data(
         user_id=user_id,
-        timestamps_arr=timestamps,
-        values_arr=values_arr,
+        values=values,
     )
-    t2 = int(time.time() * 1000)
+    t1 = int(time.time() * 1000)
 
     # return response
     return JsonResponse(
         {
             "status": "success",
-            "request_parsing_time": f"{t1 - t0:,} ms",
-            "cassandra_write_time": f"{t2 - t1:,} ms",
-            "total_time": f"{t2 - t0:,} ms",
+            "db_write_time": f"{t1 - t0:,} ms",
         }
     )

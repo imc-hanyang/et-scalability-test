@@ -69,7 +69,7 @@ commitlog_sync_period_in_ms: 10000
 # archiving commitlog segments (see commitlog_archiving.properties),
 # then you probably want a finer granularity of archiving; 8 or 16 MB
 # is reasonable.
-commitlog_segment_size_in_mb: 128
+commitlog_segment_size_in_mb: 64
 
 # The size of the individual schema commitlog file segments.
 #
@@ -77,7 +77,7 @@ commitlog_segment_size_in_mb: 128
 # size of the data commitlog. It's because the segment size puts
 # a limit on the mutation size that can be written at once, and some
 # schema mutation writes are much larger than average.
-schema_commitlog_segment_size_in_mb: 512
+schema_commitlog_segment_size_in_mb: 256
 
 # seed_provider class_name is saved for future use.
 # A seed address is mandatory.
