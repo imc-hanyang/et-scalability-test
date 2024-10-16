@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-deployment
+  labels:
+    app: easytrack
+spec:
+  replicas: 18
+  selector:
+    matchLabels:
+      app: easytrack
+  template:
+    metadata:
+      labels:
+        app: easytrack
+    spec:
+      containers:
+        - name: et-rest-api-server
+          image: qobiljon/et-rest-api-server:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+          - name: ALLOWED_HOSTS
+            value: "20.249.185.221"
+          - name: CASSANDRA_IP_ADDRESSES
+            value: "10.0.0.17,10.0.0.18,10.0.0.19,10.0.0.20,10.0.0.21,10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7"
+          - name: CASSANDRA_ADMIN_USER
+            value: "cassandra"
+          - name: CASSANDRA_ADMIN_PASSWORD
+            value: "cassandra"
+          - name: CASSANDRA_BATCH_STMT_CNT
+            value: "20"

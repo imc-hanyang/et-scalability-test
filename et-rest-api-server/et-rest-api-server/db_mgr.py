@@ -8,9 +8,13 @@ from cassandra.cluster import EXEC_PROFILE_DEFAULT, Cluster, ExecutionProfile, S
 from cassandra.policies import RoundRobinPolicy
 from cassandra.query import BatchStatement
 
+# import ssl
+
+
 cassandra_contact_points: [str] = []
 cassandra_cluster: Cluster | None = None
 cassandra_session: Session | None = None
+batch_stmt_cnt: int = 3
 
 
 def parse_envs():
@@ -27,6 +31,10 @@ def parse_envs():
     cassandra_contact_points.clear()
     cassandra_contact_points.extend(tmp)
     print(f"Cassandra contact points: {tmp}")
+
+    # batch statement count
+    global batch_stmt_cnt
+    batch_stmt_cnt = int(os.environ["CASSANDRA_BATCH_STMT_CNT"])
 
 
 def init_connection():
@@ -75,6 +83,6 @@ def save_data(
     batch_stmt = BatchStatement(consistency_level=ConsistencyLevel.ANY)
     for i in range(len(values)):
         batch_stmt.add(insert_stmt, (user_id, values[i]))
-        if i % 3 == 0 or i == len(values) - 1:
+        if i % batch_stmt_cnt == 0 or i == len(values) - 1:
             cassandra_session.execute(batch_stmt)
             batch_stmt.clear()

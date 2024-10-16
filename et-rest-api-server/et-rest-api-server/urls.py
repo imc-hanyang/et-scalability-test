@@ -23,4 +23,5 @@ from . import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("upload/", views.upload_file),
+    path("make_cpu_busy/", views.make_cpu_busy),
 ]

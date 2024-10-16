@@ -1,11 +1,7 @@
 ```bash
-cd results/_MB/__
+jmeter -n -t jmeter_script.jmx -l result.csv
 ```
 
 ```bash
-jmeter -n -t ../../et-grpc-login-test.jmx -l res.csv
-```
-
-```bash
-jmeter -g res.csv -o report
+jmeter -g result.csv -o html_report
 ```

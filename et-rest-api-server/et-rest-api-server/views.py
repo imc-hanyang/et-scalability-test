@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 
 from . import db_mgr
 
-load_dotenv()
-db_mgr.parse_envs()
-db_mgr.init_connection()
+# load_dotenv()
+# db_mgr.parse_envs()
+# db_mgr.init_connection()
 
 
 @csrf_exempt
@@ -37,3 +37,17 @@ def upload_file(request):
             "db_write_time": f"{t1 - t0:,} ms",
         }
     )
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def make_cpu_busy(request):
+    # parse request
+    duration_sec = int(request.POST["duration_sec"])
+
+    t0 = time.time()
+    t1 = t0 + duration_sec
+    while time.time() < t1:
+        pass  # busy loop, consuming 1 vCPU
+
+    return JsonResponse({"status": "success"})

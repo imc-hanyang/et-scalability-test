@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request">
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.path">/upload/</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
+          <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
+            <collectionProp name="HTTPFileArgs.files">
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file1</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file2</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file3</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file4</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file5</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file6</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file7</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file8</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file9</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file10</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file11</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file12</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file13</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file14</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file15</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file16</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file17</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file18</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file19</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file20</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file21</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file22</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file23</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file24</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file25</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file26</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file27</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file28</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file29</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file30</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file31</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file32</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file33</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file34</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file35</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file36</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file37</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file38</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file39</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file40</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file41</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file42</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file43</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file44</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file45</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file46</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file47</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file48</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file49</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file50</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file51</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file52</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file53</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file54</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file55</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file56</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file57</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file58</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file59</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file60</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file61</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file62</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file63</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file64</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file65</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file66</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file67</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file68</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file69</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file70</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file71</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file72</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file73</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file74</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file75</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file76</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file77</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file78</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file79</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file80</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file81</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file82</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file83</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file84</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file85</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file86</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file87</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file88</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file89</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file90</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file91</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file92</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file93</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file94</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file95</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file96</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file97</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file98</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file99</stringProp>
+              </elementProp>
+              <elementProp name="/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/plain</stringProp>
+                <stringProp name="File.path">/Users/qobiljon/Desktop/et-scalability-test/jmeter/data/1MB.txt</stringProp>
+                <stringProp name="File.paramname">file100</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="user_id" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">${__threadNum}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">user_id</stringProp>
+              </elementProp>
+              <elementProp name="timestamp" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">${__time()}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">timestamp</stringProp>
+                <stringProp name="HTTPArgument.content_type">text/plain</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

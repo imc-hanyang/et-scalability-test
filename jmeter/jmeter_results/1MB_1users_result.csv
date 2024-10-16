@@ -1,0 +1,2 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1722583331407,93,HTTP Request,200,OK,Thread Group 1-1,text,true,,299,1026144,1,1,http://localhost:8000/upload/,91,0,15

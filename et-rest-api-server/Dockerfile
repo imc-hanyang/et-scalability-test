@@ -1,4 +1,5 @@
-FROM --platform=linux/amd64 python:3.9.19-slim-bullseye
+# FROM --platform=linux/amd64 python:3.9.19-slim-bullseye
+FROM python:3.9.19-slim-bullseye
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -11,5 +12,7 @@ COPY . .
 
 EXPOSE 8000
 
-ENTRYPOINT ["python", "-m", "gunicorn"]
-CMD ["et-rest-api-server.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "--reload"]
+# ENTRYPOINT ["python", "-m", "gunicorn"]
+# CMD ["et-rest-api-server.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "--reload"]
+ENTRYPOINT ["python", "-m", "manage.py"]
+CMD ["runserver", "0:8000"]

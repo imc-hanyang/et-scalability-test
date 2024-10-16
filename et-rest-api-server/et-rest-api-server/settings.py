@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,6 +27,15 @@ SECRET_KEY = "django-insecure-8f*f=g6hg5oj=&210b$t8hc^-pnn=0=r0x=emiu)!y$8-&90mc
 DEBUG = True
 
 ALLOWED_HOSTS = []
+_ips = os.environ["ALLOWED_HOSTS"]
+if _ips:
+    for ip in _ips.split(","):
+        if ip.strip() != "":
+            ALLOWED_HOSTS.append(ip.strip())
+print(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+
+
+DATA_UPLOAD_MAX_NUMBER_FILES = 1000
 
 
 # Application definition

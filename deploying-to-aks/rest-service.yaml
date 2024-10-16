@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest-service
+  labels:
+    app: easytrack
+spec:
+  type: LoadBalancer
+  selector:
+    app: easytrack
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 30080
