@@ -4,40 +4,23 @@ import ssl
 import time
 from os.path import exists
 
+from dotenv import load_dotenv
 from cassandra.auth import PlainTextAuthProvider
 from cassandra.cluster import Cluster
 
 from tools import settings, utils
 
 
+load_dotenv()
+
+
 # region common part
 def get_cassandra_session():
     if settings.cassandra_cluster is None:
-        # resolve contact points (IP addresses of cassandra nodes / seeds)
-        contact_points = os.environ["CASSANDRA_IP_ADDRESSES"].split(",")
-        i = 0
-        while i < len(contact_points):
-            contact_points[i] = contact_points[i].strip()
-            if not contact_points[i]:
-                del contact_points[i]
-            else:
-                i += 1
-
-        # prepare ssl context
-        ssl_context = ssl.create_default_context()
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
-
-        # initialize cassandra session
         settings.cassandra_cluster = Cluster(
-            contact_points=contact_points,
+            contact_points=["localhost"], #"et-cassandra"],
             executor_threads=2048,
             connect_timeout=1200,
-            ssl_context=ssl_context,
-            auth_provider=PlainTextAuthProvider(
-                username=os.environ["CASSANDRA_ADMIN_USER"],
-                password=os.environ["CASSANDRA_ADMIN_PASSWORD"],
-            ),
         )
         settings.cassandra_session = settings.cassandra_cluster.connect()
         print("cassandra session initialized", settings.cassandra_session)

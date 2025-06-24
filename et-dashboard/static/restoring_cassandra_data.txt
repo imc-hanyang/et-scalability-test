@@ -1,0 +1,6 @@
+The *.csv files in this archive contain the raw data that can be decoded to view the values or restored to Cassandra.
+
+The process of viewing the values is as follows:
+    1. Extract last column (values)
+    2. Convert to bytes from hex string
+    3. Convert bytes to readable string (e.g., utf8 conversion)

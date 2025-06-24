@@ -150,7 +150,7 @@ def handle_campaigns_list(request):
             request=request,
             template_name="page_campaigns.html",
             context={
-                "title": "%s's campaigns" % request.user.email,
+                "title": "Researcher's campaigns", # % request.user.email,
                 "my_campaigns": my_campaigns,
             },
         )
