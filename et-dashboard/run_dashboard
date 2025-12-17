@@ -1,0 +1,2 @@
+rm -f dashboard.log
+nohup env PYTHONUNBUFFERED=1 python3 ./manage.py runserver 0:8080 > server.log 2>&1 &

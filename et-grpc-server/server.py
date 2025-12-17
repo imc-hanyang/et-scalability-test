@@ -720,9 +720,16 @@ def main():
             init_necessary = res.one()[0] == 0
             if init_necessary:
                 print("DB initialization necessary, initializing now...")
-                with open("assets/schema.cql") as r:
-                    for line in r:
-                        session.execute(line[:-1])
+                with open("assets/schema.cql", "r", encoding="utf-8") as f:
+                    cql = f.read()
+
+                for stmt in cql.split(";"):
+                    stmt = stmt.strip()
+                    if stmt:
+                        session.execute(stmt)
+                # with open("assets/schema.cql") as r:
+                #   for line in r:
+                #       session.execute(line[:-1])
         except (UnresolvableContactPoints, NoHostAvailable):
             time.sleep(5)
             print("Waiting for DB to boot up...")
