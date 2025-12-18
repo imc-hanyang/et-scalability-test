@@ -1,11 +1,30 @@
+"""
+Configuration settings for the EasyTrack Dashboard tools package.
+
+This module provides global configuration variables and constants used
+throughout the application for database connections and file paths.
+"""
+
 import os
 import tempfile
+from typing import Optional
 
-cqlsh_path = "/root/apache-cassandra-4.0-rc1/bin/cqlsh"
-download_dir = os.path.join(tempfile.gettempdir(), "easytrack_dashboard")
-settings_dir = os.path.dirname(__file__)
-PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
-STATIC_DIR = os.path.join(PROJECT_ROOT, "static/")
-db_conn = None
-cassandra_cluster = None
-cassandra_session = None
+# Cassandra configuration
+CQLSH_PATH: str = "/root/apache-cassandra-4.0-rc1/bin/cqlsh"
+DOWNLOAD_DIR: str = os.path.join(tempfile.gettempdir(), "easytrack_dashboard")
+
+# Project paths
+SETTINGS_DIR: str = os.path.dirname(__file__)
+PROJECT_ROOT: str = os.path.abspath(os.path.dirname(SETTINGS_DIR))
+STATIC_DIR: str = os.path.join(PROJECT_ROOT, "static/")
+
+# Backward compatibility aliases (deprecated - use UPPER_CASE versions)
+cqlsh_path = CQLSH_PATH
+download_dir = DOWNLOAD_DIR
+settings_dir = SETTINGS_DIR
+
+# Database connection singletons (initialized at runtime)
+db_conn: Optional[object] = None
+cassandra_cluster: Optional[object] = None
+cassandra_session: Optional[object] = None
+

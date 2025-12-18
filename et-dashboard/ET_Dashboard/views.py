@@ -1,10 +1,19 @@
+"""
+Django views for the EasyTrack Dashboard application.
+
+This module contains all view functions for handling HTTP requests,
+including authentication, campaign management, data retrieval, and API endpoints.
+"""
+
 import datetime
 import json
+import logging
 import mimetypes
 import os
 import re
 import zipfile
 from json import JSONDecodeError
+from typing import Any, Optional
 from wsgiref.util import FileWrapper
 
 import plotly
@@ -14,17 +23,28 @@ from django.contrib.auth import login as dj_login
 from django.contrib.auth import logout as dj_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User as dj_User
-from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
-
-# Django
 from django.views.decorators.http import require_http_methods
 
-# EasyTrack
 from ET_Dashboard.models import EnhancedDataSource
 from tools import db_mgr as db
 from tools import settings, utils
+
+# Configure logging
+logger = logging.getLogger(__name__)
+
+# URL Name Constants
+REDIRECT_CAMPAIGNS_LIST = "campaigns-list"
+REDIRECT_LOGIN = "login"
+
+# Error Messages
+ERR_INVALID_PARAMS = "Invalid parameters"
+ERR_CHECK_PARAMS = "check your param types"
+ERR_INVALID_VALUES = "values for some params are invalid, pls recheck"
+
+
 
 
 def handle_google_verification(request):
@@ -36,7 +56,7 @@ def handle_login_api(request):
     if request.user.is_authenticated:
         db_user = db.get_user(email=request.user.email)
         if db_user is None:
-            print("new user : ", end="")
+            logger.info("Creating new user: %s", request.user.email)
             session_key = utils.md5(value=f"{request.user.email}{utils.now_us()}")
             db_user = db.create_user(
                 name=request.user.get_full_name(),
@@ -63,7 +83,7 @@ def handle_development_login_api(request):
         email=request.user.email if request.user.is_authenticated else dev_email
     )
     if db_user is None:
-        print("new user : ", end="")
+        logger.info("Creating new development user: %s", dev_email)
         session_key = utils.md5(value=f"{dev_email}{utils.now_us()}")
         db_user = db.create_user(
             name=dev_email, email=dev_email, session_key=session_key
@@ -144,7 +164,7 @@ def handle_campaigns_list(request):
                     ),
                 }
             ]
-        print("%s opened the main page" % request.user.email)
+        logger.info("%s opened the main page", request.user.email)
         my_campaigns.sort(key=lambda x: x["id"])
         return render(
             request=request,
@@ -956,7 +976,7 @@ def handle_download_data_api(request):
                         dump_file_path = db.dump_data(
                             db_campaign=db_campaign, db_user=db_participant_user
                         )
-                        print(f"dump path : {dump_file_path}")
+                        logger.debug("Dump path: %s", dump_file_path)
                         with open(dump_file_path, "rb") as r:
                             dump_content = bytes(r.read())
                         os.remove(dump_file_path)
@@ -1129,7 +1149,7 @@ def handle_db_mgmt_api(request):
     #     end_timestamp=pg_campaign['end_timestamp']
     # )
     cs_campaign = db.get_campaign(campaign_id=1)
-    print("1. campaign copied")
+    logger.info("Campaign copied")
 
     # prepare data source map
     cur.execute('select * from "et"."data_source";')
@@ -1139,7 +1159,7 @@ def handle_db_mgmt_api(request):
     data_source_id_map = {}
     for cs_data_source in db.get_all_data_sources():
         data_source_id_map[pg_data_source_ids[cs_data_source.name]] = cs_data_source.id
-    print("   data sources prepared")
+    logger.info("Data sources prepared")
 
     # 2. copy participants and data
     cur.execute(
@@ -1154,7 +1174,7 @@ def handle_db_mgmt_api(request):
         cs_participant = db.get_user(
             email=pg_participant["email"]
         )  # db.create_user(name=pg_participant['name'], email=pg_participant['email'], session_key=utils.md5(value=f'{pg_participant["email"]}{utils.now_us()}'))
-        print(f"   participant copied (name = {cs_participant.name})")
+        logger.info("Participant copied: %s", cs_participant.name)
         # 2.2. copy data
         # db.bind_participant_to_campaign(db_user=cs_participant, db_campaign=cs_campaign)
         cur.execute(
@@ -1173,9 +1193,9 @@ def handle_db_mgmt_api(request):
                 timestamp=pg_value["timestamp"],
                 value=bytes(pg_value["value"]),
             )
-        print(f"   user data copied (name = {cs_participant.name})")
+        logger.info("User data copied: %s", cs_participant.name)
 
-    print("done")
+    logger.info("Database migration completed")
     cur.close()
     conn.close()
     return JsonResponse(data={"result": "success"})
