@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+
+<!-- Registration Form -->
+<div class="col s12 m6 offset-m3 center-align">
+    <div class="card" style="padding: 20px; max-width: 400px; margin: 0 auto;">
+        <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            {% if error %}
+            <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            {% if success %}
+            <p style="color: green;">{{ success }}</p>
+            {% endif %}
+            <div class="input-field">
+                <input type="text" id="username" name="username" required>
+                <label for="username">Username</label>
+            </div>
+            <div class="input-field">
+                <input type="password" id="password" name="password" required>
+                <label for="password">Password</label>
+            </div>
+            <div class="input-field">
+                <input type="password" id="password_confirm" name="password_confirm" required>
+                <label for="password_confirm">Confirm Password</label>
+            </div>
+            <button type="submit" class="btn waves-effect waves-light" style="width: 100%;">
+                회원가입
+            </button>
+        </form>
+        <p style="margin-top: 15px;">
+            If you have account already <a href="{% url 'login' %}">login</a>
+        </p>
+    </div>
+</div>
+
+<style>
+    body {
+        text-align: center;
+    }
+</style>
+{% endblock %}

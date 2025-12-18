@@ -23,6 +23,7 @@ urlpatterns = [
     # authentication
     path("login/", views.handle_login_api, name="login"),
     path("logout/", views.handle_logout_api, name="logout"),
+    path("register/", views.handle_register_api, name="register"),
     path("dev_login/", views.handle_development_login_api, name="dev-login"),
     # dashboard navigation
     path("", views.handle_campaigns_list, name="campaigns-list"),

@@ -53,6 +53,32 @@ def handle_google_verification(request):
 
 @require_http_methods(["GET", "POST"])
 def handle_login_api(request):
+    # Handle POST login request
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = dj_authenticate(request, username=username, password=password)
+        if user is not None:
+            dj_login(request, user)
+            # Check if db_user exists, create if not
+            db_user = db.get_user(email=user.email)
+            if db_user is None:
+                logger.info("Creating new user from login: %s", user.email)
+                session_key = utils.md5(value=f"{user.email}{utils.now_us()}")
+                db.create_user(
+                    name=user.get_full_name() or user.username,
+                    email=user.email,
+                    session_key=session_key,
+                )
+            return redirect(to="campaigns-list")
+        else:
+            return render(
+                request=request,
+                template_name="page_authentication.html",
+                context={"title": "Authentication", "error": "Invalid username or password"},
+            )
+    
+    # Handle GET request (already authenticated user)
     if request.user.is_authenticated:
         db_user = db.get_user(email=request.user.email)
         if db_user is None:
@@ -132,6 +158,58 @@ def handle_development_login_api(request):
 def handle_logout_api(request):
     dj_logout(request=request)
     return redirect(to="login")
+
+
+@require_http_methods(["GET", "POST"])
+def handle_register_api(request):
+    """Handle user registration with username and password."""
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        password_confirm = request.POST.get("password_confirm")
+        
+        # Validation
+        if not username or not password:
+            return render(
+                request=request,
+                template_name="page_register.html",
+                context={"title": "Registration", "error": "Username and password are required"},
+            )
+        
+        if password != password_confirm:
+            return render(
+                request=request,
+                template_name="page_register.html",
+                context={"title": "Registration", "error": "Passwords do not match"},
+            )
+        
+        if dj_User.objects.filter(username=username).exists():
+            return render(
+                request=request,
+                template_name="page_register.html",
+                context={"title": "Registration", "error": "Username already exists"},
+            )
+        
+        # Create Django user
+        user = dj_User.objects.create_user(username=username, password=password, email=f"{username}@local")
+        
+        # Create database user
+        session_key = utils.md5(value=f"{user.email}{utils.now_us()}")
+        db.create_user(name=username, email=user.email, session_key=session_key)
+        
+        logger.info("New user registered: %s", username)
+        
+        return render(
+            request=request,
+            template_name="page_register.html",
+            context={"title": "Registration", "success": "Registration successful! Please login."},
+        )
+    
+    return render(
+        request=request,
+        template_name="page_register.html",
+        context={"title": "Registration"},
+    )
 
 
 @login_required
