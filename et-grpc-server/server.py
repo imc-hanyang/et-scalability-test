@@ -1,7 +1,15 @@
+"""
+EasyTrack gRPC Server.
+
+This module implements the main gRPC server for the EasyTrack platform,
+providing services for user management, campaign management, data source
+management, data submission/retrieval, statistics, and communication.
+"""
+import logging
 import os
-import re
 import time
 from concurrent import futures
+from typing import Any
 
 import grpc
 from cassandra import UnresolvableContactPoints
@@ -11,31 +19,66 @@ from et_grpcs import et_service_pb2, et_service_pb2_grpc
 from tools import db_mgr as db
 from tools import settings, utils
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
 
 class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
-    # region User management module
-    def register(self, request, context):
+    """
+    gRPC service implementation for EasyTrack.
+
+    Provides RPC methods for user management, campaign management,
+    data source management, data submission/retrieval, statistics,
+    and communication between users.
+    """
+
+    # ==========================================================================
+    # User Management Module
+    # ==========================================================================
+
+    def register(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.Register.Response:
+        """
+        Register a new user.
+
+        Args:
+            request: Register request containing username, name, and password.
+            context: gRPC context.
+
+        Returns:
+            Register response indicating success or failure.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: register()")
+        logger.info("%s: register()", timestamp)
 
         grpc_response = et_service_pb2.Register.Response()
         grpc_response.success = False
 
-        # verify that request.username is minimum 4 characters long
-        if len(request.username) < 3:
-            print(f"{timestamp}: register(); invalid username")
-            grpc_response.message = "Username must be minimum 4 characters long"
+        # Validate username length
+        if len(request.username) < settings.MIN_USERNAME_LENGTH:
+            logger.warning("%s: register() - invalid username", timestamp)
+            grpc_response.message = (
+                f"Username must be minimum {settings.MIN_USERNAME_LENGTH} characters long"
+            )
             return grpc_response
-        # verify that password is minimum 4 characters long
-        if len(request.password) < 3:
-            print(f"{timestamp}: register(); invalid password")
-            grpc_response.message = "Password must be minimum 4 characters long"
+
+        # Validate password length
+        if len(request.password) < settings.MIN_PASSWORD_LENGTH:
+            logger.warning("%s: register() - invalid password", timestamp)
+            grpc_response.message = (
+                f"Password must be minimum {settings.MIN_PASSWORD_LENGTH} characters long"
+            )
             return grpc_response
 
         db_user = db.get_user(email=f"{request.username}@easytrack.com")
         if db_user is None:
-            # new user
-            print("new user : ", end="")
+            # New user
+            logger.info("Creating new user: %s", request.username)
             new_email = f"{request.username}@easytrack.com"
             db.create_user(
                 name=request.name,
@@ -49,31 +92,48 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 grpc_response.message = (
                     "Failed to create user (contact backend developer)"
                 )
-                print(f"{timestamp}: register(); failed to create user")
+                logger.error("%s: register() - failed to create user", timestamp)
         else:
-            # already exists
+            # User already exists
             grpc_response.message = "Username already exists"
-            print(f"{timestamp}: register(); username already exists")
+            logger.warning("%s: register() - username already exists", timestamp)
 
-        print(f"{timestamp}: register(); success = {grpc_response.success}")
+        logger.info("%s: register() - success = %s", timestamp, grpc_response.success)
         return grpc_response
 
-    def login(self, request, context):
+    def login(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.Login.Response:
+        """
+        Log in an existing user.
+
+        Args:
+            request: Login request containing username and password.
+            context: gRPC context.
+
+        Returns:
+            Login response with user info if successful.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: login()")
+        logger.info("%s: login()", timestamp)
 
         grpc_response = et_service_pb2.Login.Response()
         grpc_response.success = False
 
-        # verify that request.username is minimum 3 characters long
-        if len(request.username) < 3:
-            print(f"{timestamp}: register(); invalid username")
-            grpc_response.message = "Username must be minimum 4 characters long"
+        # Validate username length
+        if len(request.username) < settings.MIN_USERNAME_LENGTH:
+            logger.warning("%s: login() - invalid username", timestamp)
+            grpc_response.message = (
+                f"Username must be minimum {settings.MIN_USERNAME_LENGTH} characters long"
+            )
             return grpc_response
-        # verify that password is minimum 3 characters long
-        if len(request.password) < 3:
-            print(f"{timestamp}: register(); invalid password")
-            grpc_response.message = "Password must be minimum 4 characters long"
+
+        # Validate password length
+        if len(request.password) < settings.MIN_PASSWORD_LENGTH:
+            logger.warning("%s: login() - invalid password", timestamp)
+            grpc_response.message = (
+                f"Password must be minimum {settings.MIN_PASSWORD_LENGTH} characters long"
+            )
             return grpc_response
 
         email = f"{request.username}@easytrack.com"
@@ -84,26 +144,38 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             grpc_response.name = db_user.name
             grpc_response.sessionKey = db_user.sessionKey
 
-        print(f"{timestamp}: login(); success = {grpc_response.success}")
+        logger.info("%s: login() - success = %s", timestamp, grpc_response.success)
         return grpc_response
 
-    def loginWithGoogle(self, request, context):
+    def loginWithGoogle(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.LoginWithGoogle.Response:
+        """
+        Log in or register a user using Google OAuth.
+
+        Args:
+            request: LoginWithGoogle request containing Google ID token.
+            context: gRPC context.
+
+        Returns:
+            LoginWithGoogle response with user info if successful.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: loginWithGoogleId()")
+        logger.info("%s: loginWithGoogle()", timestamp)
 
         grpc_response = et_service_pb2.LoginWithGoogle.Response()
         grpc_response.success = False
 
         google_profile = utils.load_google_profile(id_token=request.idToken)
+        if google_profile is None:
+            return grpc_response
+
         session_key = utils.md5(value=f'{google_profile["email"]}{utils.now_us()}')
-        db_user = (
-            db.get_user(email=google_profile["email"])
-            if google_profile is not None
-            else None
-        )
+        db_user = db.get_user(email=google_profile["email"])
 
         if db_user is None:
-            print("new user : ", end="")
+            # New user
+            logger.info("Creating new Google user: %s", google_profile["email"])
             db.create_user(
                 name=google_profile["name"],
                 email=google_profile["email"],
@@ -115,17 +187,32 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 grpc_response.sessionKey = session_key
                 grpc_response.success = True
         else:
+            # Existing user - update session key
             db.update_session_key(db_user=db_user, session_key=session_key)
             grpc_response.userId = db_user.id
             grpc_response.sessionKey = session_key
             grpc_response.success = True
 
-        print(f"{timestamp}: loginWithGoogleId(); success = {grpc_response.success}")
+        logger.info(
+            "%s: loginWithGoogle() - success = %s", timestamp, grpc_response.success
+        )
         return grpc_response
 
-    def setTag(self, request, context):
+    def setTag(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.BindUserToCampaign.Response:
+        """
+        Set a tag for a user.
+
+        Args:
+            request: SetTag request containing userId and tag.
+            context: gRPC context.
+
+        Returns:
+            Response indicating success or failure.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: setTag()")
+        logger.info("%s: setTag()", timestamp)
 
         grpc_response = et_service_pb2.BindUserToCampaign.Response()
         grpc_response.success = False
@@ -135,12 +222,24 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             db.set_user_tag(db_user=db_user, tag=request.tag)
             grpc_response.success = True
 
-        print(f"{timestamp}: setTag(); success = {grpc_response.success}")
+        logger.info("%s: setTag() - success = %s", timestamp, grpc_response.success)
         return grpc_response
 
-    def getTag(self, request, context):
+    def getTag(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.BindUserToCampaign.Response:
+        """
+        Get a user's tag.
+
+        Args:
+            request: GetTag request containing userId.
+            context: gRPC context.
+
+        Returns:
+            Response containing the user's tag.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: getTag()")
+        logger.info("%s: getTag()", timestamp)
 
         grpc_response = et_service_pb2.BindUserToCampaign.Response()
         grpc_response.success = False
@@ -150,12 +249,24 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             grpc_response.tag = db_user.tag
             grpc_response.success = True
 
-        print(f"{timestamp}: getTag(); success = {grpc_response.success}")
+        logger.info("%s: getTag() - success = %s", timestamp, grpc_response.success)
         return grpc_response
 
-    def bindUserToCampaign(self, request, context):
+    def bindUserToCampaign(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.BindUserToCampaign.Response:
+        """
+        Bind a user to a campaign as a participant.
+
+        Args:
+            request: BindUserToCampaign request with userId and campaignId.
+            context: gRPC context.
+
+        Returns:
+            Response with binding status and campaign start timestamp.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: bindUserToCampaign()")
+        logger.info("%s: bindUserToCampaign()", timestamp)
 
         grpc_response = et_service_pb2.BindUserToCampaign.Response()
         grpc_response.success = False
@@ -170,14 +281,29 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             grpc_response.campaignStartTimestamp = db_campaign.startTimestamp
             grpc_response.success = True
 
-        print(
-            f"{timestamp}: bindUserToCampaign(newBinding={grpc_response.isFirstTimeBinding}); success = {grpc_response.success}"
+        logger.info(
+            "%s: bindUserToCampaign(newBinding=%s) - success = %s",
+            timestamp,
+            grpc_response.isFirstTimeBinding,
+            grpc_response.success,
         )
         return grpc_response
 
-    def retrieveParticipants(self, request, context):
+    def retrieveParticipants(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.RetrieveParticipants.Response:
+        """
+        Retrieve all participants of a campaign.
+
+        Args:
+            request: RetrieveParticipants request with campaign info.
+            context: gRPC context.
+
+        Returns:
+            Response containing participant information.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: retrieveParticipants()")
+        logger.info("%s: retrieveParticipants()", timestamp)
 
         grpc_response = et_service_pb2.RetrieveParticipants.Response()
         grpc_response.success = False
@@ -197,15 +323,30 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 grpc_response.email.extend([row.email])
             grpc_response.success = True
 
-        print(f"{timestamp}: retrieveParticipants(); success = {grpc_response.success}")
+        logger.info(
+            "%s: retrieveParticipants() - success = %s", timestamp, grpc_response.success
+        )
         return grpc_response
 
-    # endregion
+    # ==========================================================================
+    # Campaign Management Module
+    # ==========================================================================
 
-    # region Campaign management module
-    def registerCampaign(self, request, context):
+    def registerCampaign(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.RegisterCampaign.Response:
+        """
+        Register a new campaign or update an existing one.
+
+        Args:
+            request: RegisterCampaign request with campaign details.
+            context: gRPC context.
+
+        Returns:
+            Response indicating success or failure.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: registerCampaign()")
+        logger.info("%s: registerCampaign()", timestamp)
 
         grpc_response = et_service_pb2.RegisterCampaign.Response()
         grpc_response.success = False
@@ -229,12 +370,26 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             )
             grpc_response.success = True
 
-        print(f"{timestamp}: registerCampaign(); success = {grpc_response.success}")
+        logger.info(
+            "%s: registerCampaign() - success = %s", timestamp, grpc_response.success
+        )
         return grpc_response
 
-    def deleteCampaign(self, request, context):
+    def deleteCampaign(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.DeleteCampaign.Response:
+        """
+        Delete a campaign.
+
+        Args:
+            request: DeleteCampaign request with campaign info.
+            context: gRPC context.
+
+        Returns:
+            Response indicating success or failure.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: deleteCampaign()")
+        logger.info("%s: deleteCampaign()", timestamp)
 
         grpc_response = et_service_pb2.DeleteCampaign.Response()
         grpc_response.success = False
@@ -251,12 +406,26 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             db.delete_campaign(db_campaign=db_campaign)
             grpc_response.success = True
 
-        print(f"{timestamp}: deleteCampaign(); success = {grpc_response.success}")
+        logger.info(
+            "%s: deleteCampaign() - success = %s", timestamp, grpc_response.success
+        )
         return grpc_response
 
-    def retrieveCampaigns(self, request, context):
+    def retrieveCampaigns(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.RetrieveCampaigns.Response:
+        """
+        Retrieve campaigns for a user.
+
+        Args:
+            request: RetrieveCampaigns request.
+            context: gRPC context.
+
+        Returns:
+            Response containing campaign information.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: retrieveCampaigns()")
+        logger.info("%s: retrieveCampaigns()", timestamp)
 
         grpc_response = et_service_pb2.RetrieveCampaigns.Response()
         grpc_response.success = False
@@ -282,12 +451,26 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 )
             grpc_response.success = True
 
-        print(f"{timestamp}: retrieveCampaigns(); success = {grpc_response.success}")
+        logger.info(
+            "%s: retrieveCampaigns() - success = %s", timestamp, grpc_response.success
+        )
         return grpc_response
 
-    def retrieveCampaign(self, request, context):
+    def retrieveCampaign(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.RetrieveCampaign.Response:
+        """
+        Retrieve a single campaign.
+
+        Args:
+            request: RetrieveCampaign request with campaignId.
+            context: gRPC context.
+
+        Returns:
+            Response containing campaign details.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: retrieveCampaign()")
+        logger.info("%s: retrieveCampaign()", timestamp)
 
         grpc_response = et_service_pb2.RetrieveCampaign.Response()
         grpc_response.success = False
@@ -295,13 +478,15 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         db_user = db.get_user(user_id=request.userId)
         db_campaign = db.get_campaign(campaign_id=request.campaignId)
 
-        is_not_none = None not in [db_user, db_campaign]
+        if db_user is None or db_campaign is None:
+            return grpc_response
+
         session_key_valid = db_user.sessionKey == request.sessionKey
-        user_matches = (
-            db_user.id == db_campaign.creatorId
-            or db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign)
+        user_matches = db_user.id == db_campaign.creatorId or db.user_is_bound_to_campaign(
+            db_user=db_user, db_campaign=db_campaign
         )
-        if is_not_none and session_key_valid and user_matches:
+
+        if session_key_valid and user_matches:
             grpc_response.name = db_campaign.name
             grpc_response.notes = db_campaign.notes
             grpc_response.creatorEmail = (
@@ -317,15 +502,30 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             )
             grpc_response.success = True
 
-        print(f"{timestamp}: retrieveCampaign(); success = {grpc_response.success}")
+        logger.info(
+            "%s: retrieveCampaign() - success = %s", timestamp, grpc_response.success
+        )
         return grpc_response
 
-    # endregion
+    # ==========================================================================
+    # Data Source Management Module
+    # ==========================================================================
 
-    # region Data source management module
-    def createDataSource(self, request, context):
+    def createDataSource(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.CreateDataSource.Response:
+        """
+        Create a new data source.
+
+        Args:
+            request: CreateDataSource request with data source details.
+            context: gRPC context.
+
+        Returns:
+            Response with created data source ID.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: createDataSource()")
+        logger.info("%s: createDataSource()", timestamp)
 
         grpc_response = et_service_pb2.CreateDataSource.Response()
         grpc_response.success = True
@@ -335,7 +535,7 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         if db_user is not None and db_user.sessionKey == request.sessionKey:
             db_data_source = db.get_data_source(data_source_name=request.name)
             if db_data_source is None:
-                print("new data source : ", end="")
+                logger.info("Creating new data source: %s", request.name)
                 db.create_data_source(
                     db_creator_user=db_user,
                     name=request.name,
@@ -345,12 +545,26 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             grpc_response.dataSourceId = db_data_source.id
             grpc_response.success = True
 
-        print(f"{timestamp}: createDataSource(); success = {grpc_response.success}")
+        logger.info(
+            "%s: createDataSource() - success = %s", timestamp, grpc_response.success
+        )
         return grpc_response
 
-    def retrieveDataSources(self, request, context):
+    def retrieveDataSources(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.RetrieveDataSources.Response:
+        """
+        Retrieve all data sources.
+
+        Args:
+            request: RetrieveDataSources request.
+            context: gRPC context.
+
+        Returns:
+            Response containing data source information.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: retrieveDataSources()")
+        logger.info("%s: retrieveDataSources()", timestamp)
 
         grpc_response = et_service_pb2.RetrieveDataSources.Response()
         grpc_response.success = False
@@ -373,16 +587,28 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 grpc_response.iconName.extend([data_source.iconName])
             grpc_response.success = True
 
-        print(f"{timestamp}: retrieveDataSources(); success = {grpc_response.success}")
+        logger.info(
+            "%s: retrieveDataSources() - success = %s", timestamp, grpc_response.success
+        )
         return grpc_response
 
-    # endregion
+    # ==========================================================================
+    # Data Management Module
+    # ==========================================================================
 
-    # region Data management module
-    def submitDataRecord(self, request, context):
-        # timestamp = int(time.time() * 1000)
-        # print(f'{timestamp}: submitDataRecord()')
+    def submitDataRecord(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.SubmitDataRecord.Response:
+        """
+        Submit a single data record.
 
+        Args:
+            request: SubmitDataRecord request with data record.
+            context: gRPC context.
+
+        Returns:
+            Response indicating success or failure.
+        """
         grpc_response = et_service_pb2.SubmitDataRecord.Response()
         grpc_response.success = False
 
@@ -390,49 +616,71 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         db_campaign = db.get_campaign(campaign_id=request.campaignId)
         db_data_source = db.get_data_source(data_source_id=request.dataSource)
 
-        if None not in [
-            db_user,
-            db_campaign,
-            db_data_source,
-        ] and db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign):
+        if (
+            None not in [db_user, db_campaign, db_data_source]
+            and db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign)
+        ):
             db.store_data_record(
                 db_user=db_user,
                 db_campaign=db_campaign,
                 db_data_source=db_data_source,
                 timestamp=request.timestamp,
-                value=request.value
+                value=request.value,
             )
             grpc_response.success = True
 
-        # print(f'{timestamp}: submitDataRecord(); success = {grpc_response.success}')
         return grpc_response
 
-    def submitDataRecords(self, request, context):
-        # timestamp = int(time.time() * 1000)
-        # print(f'{timestamp}: submitDataRecords()')
+    def submitDataRecords(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.SubmitDataRecords.Response:
+        """
+        Submit multiple data records in batch.
 
+        Args:
+            request: SubmitDataRecords request with data records.
+            context: gRPC context.
+
+        Returns:
+            Response indicating success or failure.
+        """
         grpc_response = et_service_pb2.SubmitDataRecords.Response()
         grpc_response.success = False
 
         db_user = db.get_user(user_id=request.userId)
         db_campaign = db.get_campaign(campaign_id=request.campaignId)
 
-        if None not in [db_user, db_campaign] and db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign) and len(request.timestamp) > 0:
+        if (
+            None not in [db_user, db_campaign]
+            and db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign)
+            and len(request.timestamp) > 0
+        ):
             db.store_data_records(
                 db_user=db_user,
                 db_campaign=db_campaign,
                 timestamp_list=request.timestamp,
                 data_source_id_list=request.dataSource,
-                value_list=request.value
+                value_list=request.value,
             )
             grpc_response.success = True
 
-        # print(f'{timestamp} submitDataRecords(); success = {grpc_response.success}')
         return grpc_response
 
-    def retrieveKNextDataRecords(self, request, context):
+    def retrieveKNextDataRecords(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.RetrieveKNextDataRecords.Response:
+        """
+        Retrieve the next K data records after a timestamp.
+
+        Args:
+            request: RetrieveKNextDataRecords request.
+            context: gRPC context.
+
+        Returns:
+            Response containing data records.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: retrieveKNextDataRecords()")
+        logger.info("%s: retrieveKNextDataRecords()", timestamp)
 
         grpc_response = et_service_pb2.RetrieveKNextDataRecords.Response()
         grpc_response.success = False
@@ -445,7 +693,7 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         if (
             None not in [db_user, db_target_user, db_target_campaign, db_data_source]
             and db_user.sessionKey == request.sessionKey
-            and request.k <= 500
+            and request.k <= settings.MAX_K_RECORDS
             and (
                 db_user.id == db_target_campaign.creatorId
                 or db.user_is_bound_to_campaign(
@@ -471,14 +719,28 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 grpc_response.value.extend([data_record.value])
             grpc_response.success = True
 
-        print(
-            f"{timestamp} retrieveKNextDataRecords(); success = {grpc_response.success}"
+        logger.info(
+            "%s: retrieveKNextDataRecords() - success = %s",
+            timestamp,
+            grpc_response.success,
         )
         return grpc_response
 
-    def retrieveFilteredDataRecords(self, request, context):
+    def retrieveFilteredDataRecords(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.RetrieveFilteredDataRecords.Response:
+        """
+        Retrieve data records filtered by timestamp range.
+
+        Args:
+            request: RetrieveFilteredDataRecords request.
+            context: gRPC context.
+
+        Returns:
+            Response containing filtered data records.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: retrieveFilteredDataRecords()")
+        logger.info("%s: retrieveFilteredDataRecords()", timestamp)
 
         grpc_response = et_service_pb2.RetrieveFilteredDataRecords.Response()
         grpc_response.success = False
@@ -490,13 +752,11 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
         from_timestamp = request.fromTimestamp
         till_timestamp = request.tillTimestamp
 
-        if None not in [
-            db_user,
-            db_target_user,
-            db_target_campaign,
-            db_data_source,
-        ] and db.user_is_bound_to_campaign(
-            db_user=db_target_user, db_campaign=db_target_campaign
+        if (
+            None not in [db_user, db_target_user, db_target_campaign, db_data_source]
+            and db.user_is_bound_to_campaign(
+                db_user=db_target_user, db_campaign=db_target_campaign
+            )
         ):
             data_records = db.get_filtered_data_records(
                 db_user=db_target_user,
@@ -514,14 +774,28 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 grpc_response.value.extend([value])
             grpc_response.success = True
 
-        print(
-            f"{timestamp} retrieveFilteredDataRecords(); success = {grpc_response.success}"
+        logger.info(
+            "%s: retrieveFilteredDataRecords() - success = %s",
+            timestamp,
+            grpc_response.success,
         )
         return grpc_response
 
-    def downloadDumpfile(self, request, context):
+    def downloadDumpfile(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.DownloadDumpfile.Response:
+        """
+        Download a data dump file for a user.
+
+        Args:
+            request: DownloadDumpfile request.
+            context: gRPC context.
+
+        Returns:
+            Response containing the dump file data.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: downloadDumpfile()")
+        logger.info("%s: downloadDumpfile()", timestamp)
 
         grpc_response = et_service_pb2.DownloadDumpfile.Response()
         grpc_response.success = False
@@ -539,39 +813,63 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             )
         ):
             file_path = db.dump_data(db_campaign=db_campaign, db_user=db_target_user)
-            with open(file_path, "rb") as r:
-                grpc_response.dump = bytes(r.read())
+            with open(file_path, "rb") as dump_file:
+                grpc_response.dump = bytes(dump_file.read())
             os.remove(file_path)
             grpc_response.success = True
 
-        print(f"{timestamp}: downloadDumpfile(); success = {grpc_response.success}")
+        logger.info(
+            "%s: downloadDumpfile() - success = %s", timestamp, grpc_response.success
+        )
         return grpc_response
 
-    # endregion
+    # ==========================================================================
+    # Statistics Module
+    # ==========================================================================
 
-    # region Statistics module
-    def submitHeartbeat(self, request, context):
-        # timestamp = int(time.time() * 1000)
-        # print(f'{timestamp}: submitHeartbeat()')
+    def submitHeartbeat(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.SubmitHeartbeat.Response:
+        """
+        Submit a heartbeat from a participant.
 
+        Args:
+            request: SubmitHeartbeat request.
+            context: gRPC context.
+
+        Returns:
+            Response indicating success or failure.
+        """
         grpc_response = et_service_pb2.SubmitHeartbeat.Response()
         grpc_response.success = False
 
         db_user = db.get_user(user_id=request.userId)
         db_campaign = db.get_campaign(campaign_id=request.campaignId)
 
-        if None not in [db_user, db_campaign] and db.user_is_bound_to_campaign(
-            db_user=db_user, db_campaign=db_campaign
+        if (
+            None not in [db_user, db_campaign]
+            and db.user_is_bound_to_campaign(db_user=db_user, db_campaign=db_campaign)
         ):
             db.update_user_heartbeat_timestamp(db_user=db_user, db_campaign=db_campaign)
             grpc_response.success = True
 
-        # print(f'{timestamp}: submitHeartbeat(); success = {grpc_response.success}')
         return grpc_response
 
-    def retrieveParticipantStats(self, request, context):
+    def retrieveParticipantStats(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.RetrieveParticipantStats.Response:
+        """
+        Retrieve statistics for a participant.
+
+        Args:
+            request: RetrieveParticipantStats request.
+            context: gRPC context.
+
+        Returns:
+            Response containing participant statistics.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: retrieveParticipantStatistics()")
+        logger.info("%s: retrieveParticipantStats()", timestamp)
 
         grpc_response = et_service_pb2.RetrieveParticipantStats.Response()
         grpc_response.success = False
@@ -603,6 +901,7 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                     db_user=db_target_user, db_campaign=db_target_campaign
                 )
             )
+
             for (
                 data_source,
                 amount_of_data,
@@ -615,17 +914,32 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 grpc_response.perDataSourceLastSyncTimestamp.extend([last_sync_time])
             grpc_response.success = True
 
-        print(
-            f"{timestamp}: retrieveParticipantStatistics(); success = {grpc_response.success}"
+        logger.info(
+            "%s: retrieveParticipantStats() - success = %s",
+            timestamp,
+            grpc_response.success,
         )
         return grpc_response
 
-    # endregion
+    # ==========================================================================
+    # Communication Management Module
+    # ==========================================================================
 
-    # region Communication management module
-    def submitDirectMessage(self, request, context):
+    def submitDirectMessage(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.SubmitDirectMessage.Response:
+        """
+        Submit a direct message to another user.
+
+        Args:
+            request: SubmitDirectMessage request.
+            context: gRPC context.
+
+        Returns:
+            Response with message ID if successful.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: submitDirectMessage()")
+        logger.info("%s: submitDirectMessage()", timestamp)
 
         grpc_response = et_service_pb2.SubmitDirectMessage.Response()
         grpc_response.success = False
@@ -646,12 +960,26 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
             grpc_response.success = True
             grpc_response.id = db_direct_message.id
 
-        print(f"{timestamp}: submitDirectMessage(); success = {grpc_response.success}")
+        logger.info(
+            "%s: submitDirectMessage() - success = %s", timestamp, grpc_response.success
+        )
         return grpc_response
 
-    def retrieveUnreadDirectMessages(self, request, context):
+    def retrieveUnreadDirectMessages(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.RetrieveUnreadDirectMessages.Response:
+        """
+        Retrieve unread direct messages for a user.
+
+        Args:
+            request: RetrieveUnreadDirectMessages request.
+            context: gRPC context.
+
+        Returns:
+            Response containing unread messages.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: retrieveUnreadDirectMessages()")
+        logger.info("%s: retrieveUnreadDirectMessages()", timestamp)
 
         grpc_response = et_service_pb2.RetrieveUnreadDirectMessages.Response()
         grpc_response.success = False
@@ -669,17 +997,46 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 grpc_response.content.extend([db_direct_message.content])
             grpc_response.success = True
 
-        print(
-            f"{timestamp}: retrieveUnreadDirectMessages(); success = {grpc_response.success}"
+        logger.info(
+            "%s: retrieveUnreadDirectMessages() - success = %s",
+            timestamp,
+            grpc_response.success,
         )
         return grpc_response
 
-    def submitNotification(self, request, context):
-        pass
+    def submitNotification(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> None:
+        """
+        Submit a notification to campaign participants.
 
-    def retrieveUnreadNotifications(self, request, context):
+        Args:
+            request: SubmitNotification request.
+            context: gRPC context.
+
+        Returns:
+            None (not implemented).
+
+        Raises:
+            NotImplementedError: This method is not yet implemented.
+        """
+        raise NotImplementedError("submitNotification is not yet implemented")
+
+    def retrieveUnreadNotifications(
+        self, request: Any, context: grpc.ServicerContext
+    ) -> et_service_pb2.RetrieveUnreadNotifications.Response:
+        """
+        Retrieve unread notifications for a user.
+
+        Args:
+            request: RetrieveUnreadNotifications request.
+            context: gRPC context.
+
+        Returns:
+            Response containing unread notifications.
+        """
         timestamp = int(time.time() * 1000)
-        print(f"{timestamp}: retrieveUnreadNotifications()")
+        logger.info("%s: retrieveUnreadNotifications()", timestamp)
 
         grpc_response = et_service_pb2.RetrieveUnreadNotifications.Response()
         grpc_response.success = False
@@ -695,22 +1052,29 @@ class ETServiceServicer(et_service_pb2_grpc.ETServiceServicer):
                 grpc_response.content.extend([notification.content])
             grpc_response.success = True
 
-        print(
-            f"{timestamp} retrieveUnreadNotifications(); success = {grpc_response.success}"
+        logger.info(
+            "%s: retrieveUnreadNotifications() - success = %s",
+            timestamp,
+            grpc_response.success,
         )
         return grpc_response
 
-    # endregion
 
+def main() -> None:
+    """
+    Main entry point for the gRPC server.
 
-def main():
+    Initializes the database connection, creates the gRPC server,
+    and starts listening for requests.
+    """
+    # Wait for database to be ready
     wait_db = True
     while wait_db:
         try:
             session = db.get_cassandra_session()
             if session is None:
                 time.sleep(5)
-                print("Waiting for DB to boot up...")
+                logger.info("Waiting for DB to boot up...")
                 continue
 
             wait_db = False
@@ -718,69 +1082,71 @@ def main():
                 "select count(*) from system_schema.keyspaces where keyspace_name='et';"
             )
             init_necessary = res.one()[0] == 0
+
             if init_necessary:
-                print("DB initialization necessary, initializing now...")
-                with open("assets/schema.cql", "r", encoding="utf-8") as f:
-                    cql = f.read()
+                logger.info("DB initialization necessary, initializing now...")
+                with open("assets/schema.cql", "r", encoding="utf-8") as schema_file:
+                    cql = schema_file.read()
 
                 for stmt in cql.split(";"):
                     stmt = stmt.strip()
                     if stmt:
                         session.execute(stmt)
-                # with open("assets/schema.cql") as r:
-                #   for line in r:
-                #       session.execute(line[:-1])
+
         except (UnresolvableContactPoints, NoHostAvailable):
             time.sleep(5)
-            print("Waiting for DB to boot up...")
-    print("DB is ready! booting server now...")
+            logger.info("Waiting for DB to boot up...")
 
-    # !note!
+    logger.info("DB is ready! Booting server now...")
+
+    # Ensure download directory exists
     if not os.path.exists(settings.download_dir):
         os.mkdir(settings.download_dir)
         os.chmod(settings.download_dir, 0o777)
-    print(
-        f'! please give "full control" permissions of the path "{settings.download_dir}" to "Everyone" !'
+
+    logger.info(
+        'Please give "full control" permissions of the path "%s" to "Everyone"',
+        settings.download_dir,
     )
 
-    # create a gRPC server
-    max_message_length = 2147483647
+    # Configure gRPC server options
+    grpc_options = [
+        ("grpc.max_send_message_length", settings.MAX_MESSAGE_LENGTH),
+        ("grpc.max_receive_message_length", settings.MAX_MESSAGE_LENGTH),
+        ("grpc.keepalive_time_ms", settings.GRPC_KEEPALIVE_TIME_MS),
+        ("grpc.keepalive_timeout_ms", settings.GRPC_KEEPALIVE_TIMEOUT_MS),
+        ("grpc.keepalive_permit_without_calls", True),
+        ("grpc.http2.max_pings_without_data", 0),
+        ("grpc.http2.min_time_between_pings_ms", settings.GRPC_KEEPALIVE_TIME_MS),
+        (
+            "grpc.http2.min_ping_interval_without_data_ms",
+            settings.GRPC_MIN_PING_INTERVAL_MS,
+        ),
+    ]
+
+    # Create gRPC server
     server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=1000),
-        options=[
-            ("grpc.max_send_message_length", max_message_length),
-            ("grpc.max_receive_message_length", max_message_length),
-            ("grpc.keepalive_time_ms", 900000),
-            # send keepalive ping every 15 minutes, default is 2 hours
-            ("grpc.keepalive_timeout_ms", 5000),
-            # keepalive ping time out after 5 seconds, default is 20 seconds
-            ("grpc.keepalive_permit_without_calls", True),
-            # allow keepalive pings when there's no gRPC calls
-            ("grpc.http2.max_pings_without_data", 0),
-            # allow unlimited amount of keepalive pings without data
-            ("grpc.http2.min_time_between_pings_ms", 900000),
-            # allow grpc pings from client every 15 minutes
-            ("grpc.http2.min_ping_interval_without_data_ms", 5000),
-            # allow grpc pings from client without data every 5 seconds
-        ],
+        futures.ThreadPoolExecutor(max_workers=settings.MAX_GRPC_WORKERS),
+        options=grpc_options,
     )
 
-    # use the generated function `add_ETServiceServicer_to_server` to add the defined class to the server
+    # Add service to server
     et_service_pb2_grpc.add_ETServiceServicer_to_server(ETServiceServicer(), server)
 
-    # listen on port 50051 [ server.add_insecure_port('[::]:50051') ]
-    print("Starting gRPC server on port 50051.")
-    server.add_insecure_port("0.0.0.0:50051")
+    # Start server
+    server_port = 50051
+    logger.info("Starting gRPC server on port %d.", server_port)
+    server.add_insecure_port(f"0.0.0.0:{server_port}")
     server.start()
 
-    # since server.start() will not block, a sleep-loop is added to keep alive
+    # Keep server running
     try:
         while True:
             time.sleep(86400)
     except KeyboardInterrupt:
         server.stop(0)
         db.end()
-        print("Server has stopped.")
+        logger.info("Server has stopped.")
 
 
 if __name__ == "__main__":
