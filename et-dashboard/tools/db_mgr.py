@@ -8,6 +8,7 @@ data storage and retrieval, and statistics tracking.
 
 import json
 import logging
+import os
 import subprocess
 from subprocess import PIPE
 from typing import Any, Dict, List, Optional, Tuple
@@ -20,7 +21,7 @@ from tools import settings, utils
 logger = logging.getLogger(__name__)
 
 # Constants
-DEFAULT_CONTACT_POINTS = ["localhost"]
+DEFAULT_CONTACT_POINTS = os.getenv("CASSANDRA_HOST", "127.0.0.1")
 EXECUTOR_THREADS = 2048
 CONNECT_TIMEOUT = 1200
 

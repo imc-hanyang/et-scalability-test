@@ -28,14 +28,7 @@ DEBUG = True
 SITE_ID = 1
 
 ALLOWED_HOSTS = [
-    # localhost
-    "localhost",
-    "127.0.0.1",
-    "0.0.0.0",
-    # KENTECH internal and external addresses
-    "easytrack.kentech.ac.kr",
-    "20.0.0.65",
-    "118.217.7.46",
+    "*"
 ]
 
 INTERNAL_IPS = ALLOWED_HOSTS.copy()
