@@ -22,6 +22,7 @@ from tools import settings, utils
 load_dotenv()
 
 # Configure module logger
+DEFAULT_CONTACT_POINTS = os.getenv("CASSANDRA_HOST", "127.0.0.1").split(",")
 logger = logging.getLogger(__name__)
 
 
@@ -43,7 +44,7 @@ def get_cassandra_session(maintenance: bool = False) -> Optional[Any]:
     """
     if settings.cassandra_cluster is None:
         settings.cassandra_cluster = Cluster(
-            contact_points=["localhost"],
+            contact_points=DEFAULT_CONTACT_POINTS,
             executor_threads=2048,
             connect_timeout=1200,
         )
