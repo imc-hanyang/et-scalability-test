@@ -21,7 +21,7 @@ from tools import settings, utils
 logger = logging.getLogger(__name__)
 
 # Constants
-DEFAULT_CONTACT_POINTS = os.getenv("CASSANDRA_HOST", "127.0.0.1")
+DEFAULT_CONTACT_POINTS = os.getenv("CASSANDRA_HOST", "127.0.0.1").split(",")
 EXECUTOR_THREADS = 2048
 CONNECT_TIMEOUT = 1200
 
