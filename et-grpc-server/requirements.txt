@@ -38,3 +38,4 @@ tqdm==4.66.4
 typing_extensions==4.12.2
 uritemplate==3.0.1
 urllib3==1.25.11
+python-dotenv==1.0.1
