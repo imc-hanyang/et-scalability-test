@@ -2,8 +2,8 @@
 FROM python:3.9-slim
 
 # environment variables for Python
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # set working directory
 RUN mkdir /home/et_dashboard
@@ -23,6 +23,8 @@ RUN python manage.py migrate
 EXPOSE 8080
 CMD ["python", "manage.py", "runserver", "0:8080"]
 
-# build: `docker build -t qobiljon/et-dashboard:1.0 .`
+# build: `docker buildx build --platform linux/amd64,linux/arm64 -t roganoh/et-dashboard:1.0 --push .`
 # create network: `docker network create et-network`
-# run: `docker run -p 8080:8080 --network et-network --name et-dashboard -d qobiljon/et-dashboard:1.0`
+# docker set: docker buildx create --use --name multiarch || docker buildx use multiarch
+#              docker buildx inspect --bootstrap
+# run: `docker run -p 8080:8080 --network et-network --name et-dashboard -d roganoh/et-dashboard:1.0`
