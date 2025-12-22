@@ -1,7 +1,5 @@
 # base image
 # FROM python:3.9-slim
-FROM --platform=linux/amd64 python:3.9-slim
-
 # environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
